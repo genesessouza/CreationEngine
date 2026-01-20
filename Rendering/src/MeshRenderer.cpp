@@ -1,41 +1,36 @@
 #include "Engine/Rendering/MeshRenderer.h"
-#include <Engine/Rendering/Renderer.h>
+#include "Engine/Rendering/Renderer.h"
 
 #include <Engine/Core/Log/Logger.h>
 
 namespace Engine::Rendering
 {
+	void MeshRenderer::InitUniforms()
+	{
+		auto& shader = m_MeshMat->GetShader();
+		shader->Bind();
+
+		m_MeshUniforms.Model = shader->GetUniformLocation(shader->GetDefaultUniformNames(UniformType::Model));
+		m_MeshUniforms.Normal = shader->GetUniformLocation(shader->GetDefaultUniformNames(UniformType::Normal));
+	}
+
 	void MeshRenderer::Draw(const Engine::Framework::Transform& transform) const
 	{
-        Engine::Rendering::Renderer::SceneData sceneData = Engine::Rendering::Renderer::GetSceneData();
+		const auto& sceneData = Engine::Rendering::Renderer::GetSceneData();
 
-        m_MeshMat->Bind();
-        auto shader = m_MeshMat->GetShader();
+		m_MeshMat->Bind();
 
-        //shader->DefineUniformMat3("u_NormalMatrix", glm::transpose(glm::inverse(glm::mat3(transform.GetMatrix()))));
-        shader->DefineUniformMat4("u_ModelMatrix", transform.GetMatrix());
-        shader->DefineUniformMat4("u_ViewProjectionMatrix", sceneData.ViewProjection);
-        shader->DefineUniformVec3("u_ViewPos", sceneData.ViewPos);
+		auto& shader = m_MeshMat->GetShader();
 
-        shader->DefineUniformBool("u_HasDirLight", sceneData.HasDirLight);
-        
-        if (sceneData.HasDirLight)
-        {
-            shader->DefineUniformVec3("u_DirLightDir", sceneData.DirLightDirection);
-            shader->DefineUniformVec4("u_DirLightColor", sceneData.DirLightColor);
-        }
+		Engine::Rendering::Renderer::UploadSceneUniforms(shader);
 
-        int count = (int)sceneData.PointLights.size();
-        shader->DefineUniformInt("u_PointLightCount", count);
+		if (transform.IsDirty())
+		{
+			shader->DefineUniformMat4(m_MeshUniforms.Model, transform.GetMatrix());
+			//shader->DefineUniformMat3(m_MeshUniforms.Normal, glm::transpose(glm::inverse(glm::mat3(transform.GetMatrix()))));
 
-        for (int i = 0; i < count; i++) 
-        {
-            std::string prefix = "u_PointLights[" + std::to_string(i) + "].";
-        
-            shader->DefineUniformVec3(prefix + "Position", sceneData.PointLights[i].Position);
-            shader->DefineUniformVec4(prefix + "Color", sceneData.PointLights[i].Color);
-            shader->DefineUniformFloat(prefix + "Intensity", sceneData.PointLights[i].Intensity);
-        }
+			transform.ClearDirty();
+		}
 
 		m_Mesh->Bind();
 

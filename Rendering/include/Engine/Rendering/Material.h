@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Engine/Rendering/Shader.h"
+#include "Engine/Rendering/Renderer.h"
 
 #include <glm/ext/vector_float3.hpp>
 
@@ -19,6 +20,8 @@ namespace Engine::Rendering
 		void Init()
 		{
 			m_Shader = Engine::Rendering::Shader::CreateDefaultShader();
+			Engine::Rendering::Renderer::InitSceneUniforms(m_Shader);
+
 			CRTN_CHECK_PTR(m_Shader);
 		}
 
@@ -28,25 +31,13 @@ namespace Engine::Rendering
 			m_Shader->Bind(); 
 		}
 
-		inline void SetModelMatrix(glm::mat4 transformMatrix)
-		{
-			//CRTN_CHECK_PTR(m_Shader);
-			m_Shader->DefineUniformMat4(m_Shader->GetDefaultUniformNames(UniformType::Model), transformMatrix);
-		}
-
-		inline void SetViewProjectionMatrix(glm::mat4 cameraViewProjectionMatrix)
-		{
-			//CRTN_CHECK_PTR(m_Shader);
-			m_Shader->DefineUniformMat4(m_Shader->GetDefaultUniformNames(UniformType::ViewProjection), cameraViewProjectionMatrix);
-		}
-
-		void SetColor(glm::vec4 color) 
+		void SetColor(const glm::vec4& color) 
 		{
 			CRTN_CHECK_PTR(m_Shader);
-			m_Shader->DefineUniformVec4("u_Color", glm::vec4(color.r, color.g, color.b, color.a)); 
+			m_Shader->DefineUniformVec4(m_Shader->GetUniformLocation(m_Shader->GetDefaultUniformNames(UniformType::Color)), glm::vec4(color.r, color.g, color.b, color.a));
 		}
 
-		const std::shared_ptr<Shader> GetShader()
+		const std::shared_ptr<Shader>& GetShader()
 		{
 			CRTN_CHECK_PTR(m_Shader);
 			return m_Shader;

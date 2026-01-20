@@ -10,8 +10,10 @@
 #include "Engine/Core/Layer/Layer.h"
 #include "Engine/Core/Layer/LayerStack.h"
 
+#include "Engine/Core/Event/MouseEvent.h"
 #include "Engine/Core/Event/WindowEvent.h"
 #include "Engine/Core/Event/FramebufferEvent.h"
+#include "Engine/Core/Event/InputState.h"
 
 #include <memory>
 
@@ -33,11 +35,20 @@ namespace Engine::Core
 		Window& GetWindow() { return *m_Window; }
 		const Window& GetWindow() const { return *m_Window; }
 	protected:
-		virtual void OnUpdate();
+		virtual void OnUpdate(float deltaTime);
 		virtual void OnEvent(Event::Event& e);
+		
+		void ProcessInput(float deltaTime);
+		void ProcessWindowChanges();
 
-		bool OnWindowClose(Event::WindowCloseEvent& e);
+		bool OnMouseMove(Event::MouseMovedEvent& e);
+		bool OnMouseScroll(Event::MouseScrolledEvent& e);
+
 		bool OnFramebufferResize(Event::FramebufferResizeEvent e);
+
+		bool OnWindowMove(Event::WindowMoveEvent& e);
+		bool OnWindowResize(Event::WindowResizeEvent& e);
+		bool OnWindowClose(Event::WindowCloseEvent& e);
 	protected:
 		Time::Time timestep;
 	private:
@@ -46,5 +57,9 @@ namespace Engine::Core
 		std::unique_ptr<Window> m_Window;
 		Log::Logger m_Logger;
 		Layer::LayerStack m_LayerStack;
+	private:
+		Event::State::MouseState m_MouseState;
+		Event::State::WindowState m_WindowState;
+		Event::State::FramebufferState m_FramebufferState;
 	};
 }

@@ -69,6 +69,9 @@
     <ClInclude Include="include\Engine\Core\MemoryManager.h">
       <Filter>Arquivos de Cabeçalho</Filter>
     </ClInclude>
+    <ClInclude Include="include\Engine\Core\Event\InputState.h">
+      <Filter>Arquivos de Cabeçalho</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Application.cpp">

@@ -69,7 +69,7 @@ namespace Engine::Platform::Windows
 			[](GLFWwindow* window, int xpos, int ypos)
 			{
 				auto* win = (WindowsWindow*)glfwGetWindowUserPointer(window);
-				Engine::Core::Event::WindowMovedEvent e(static_cast<uint32_t>(xpos), static_cast<uint32_t>(ypos));
+				Engine::Core::Event::WindowMoveEvent e(static_cast<uint32_t>(xpos), static_cast<uint32_t>(ypos));
 				win->m_EventCallback(e);
 			});
 

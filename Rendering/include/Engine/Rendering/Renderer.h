@@ -1,25 +1,28 @@
 #pragma once
 
-#include <Engine/Framework/Light.h>
-#include <Engine/Framework/Camera.h>
+#include "Engine/Rendering/Shader.h"
 
-#include <Engine/Framework/GameObject.h>
+#include <glm/glm.hpp>
 
 #include <memory>
 
+namespace Engine::Framework {
+	class Scene;
+	class Camera;
+}
+
 namespace Engine::Rendering
 {
-	struct PointLightData
-	{
-		glm::vec3 Position;
-		glm::vec4 Color;
-
-		float Intensity;
-	};
-
 	class Renderer
 	{
 	public:
+		struct PointLightData
+		{
+			glm::vec3 Position;
+			glm::vec4 Color;
+
+			float Intensity;
+		};
 		struct SceneData
 		{
 			glm::mat4 ViewProjection;
@@ -32,9 +35,19 @@ namespace Engine::Rendering
 
 			// Point Lights
 			std::vector<PointLightData> PointLights;
+
+			// Dirty flags
+			bool CameraDirty = true;
+			bool LightsDirty = true;
 		};
 	public:
-		static void BeginScene(std::shared_ptr<Framework::Camera>& camera, const std::vector<std::shared_ptr<Framework::GameObject>>& sceneObjects);
+		static void InitSceneUniforms(const std::shared_ptr<Engine::Rendering::Shader>& shader);
+		static void UploadSceneUniforms(const std::shared_ptr<Engine::Rendering::Shader>& shader);
+
+		static void MarkCameraDirty() { s_SceneData.CameraDirty = true; }
+		static void MarkLightsDirty() { s_SceneData.LightsDirty = true; }
+
+		static void BeginScene(std::shared_ptr<Engine::Framework::Camera>& camera, const Engine::Framework::Scene& scene);
 		static void EndScene();
 
 		static const SceneData& GetSceneData() { return s_SceneData; }

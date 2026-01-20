@@ -13,6 +13,7 @@ namespace Engine::Framework
 		GetViewMatrix();
 		GetProjectionMatrix();
 	}
+
 	const glm::mat4 Camera::GetViewMatrix()
 	{
 		if (m_Dirty)
@@ -20,6 +21,7 @@ namespace Engine::Framework
 			m_CachedViewMatrix = glm::inverse(m_Transform.GetMatrix());
 			m_Dirty = false;
 		}
+
 		return m_CachedViewMatrix;
 	}
 

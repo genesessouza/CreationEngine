@@ -9,32 +9,45 @@
 
 namespace Engine::Framework
 {
+	enum class ObjectType
+	{
+		Mesh,
+		PointLight,
+		Null
+	};
+
 	class GameObject
 	{
 	public:
-		GameObject() : m_Renderer(nullptr)
+		GameObject() : m_MeshRenderer(nullptr), m_Type(ObjectType::Mesh)
 		{
 		}
 
 		virtual ~GameObject() = default;
 
+		ObjectType GetType() const { return m_Type; }
+
 		void Init()
 		{
-			m_Renderer = Engine::Rendering::MeshRenderer::Create();
+			m_MeshRenderer = Engine::Rendering::MeshRenderer::Create();
 
-			if (m_Renderer)
-				m_Renderer->Init();
+			if (m_MeshRenderer)
+				m_MeshRenderer->Init();
 		}
 
 		inline void Draw() const
 		{
-			if (m_Renderer)
-				m_Renderer->Draw(m_Transform);
+			if (m_MeshRenderer)
+				m_MeshRenderer->Draw(m_Transform);
 		}
 
 		static std::shared_ptr<GameObject> Create() { return std::make_shared<GameObject>(); }
 	public:
 		Transform m_Transform;
-		std::shared_ptr<Engine::Rendering::MeshRenderer> m_Renderer;
+		std::shared_ptr<Engine::Rendering::MeshRenderer> m_MeshRenderer;
+	protected:
+		GameObject(ObjectType type) : m_Type(type) {}
+	private:
+		ObjectType m_Type;
 	};
 }

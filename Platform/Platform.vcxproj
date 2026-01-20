@@ -31,6 +31,11 @@
     <ClCompile Include="src\Windows\WindowsWindow.cpp" />
     <ClCompile Include="src\Windows\WindowsWindowFactory.cpp" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Core\Core.vcxproj">
+      <Project>{5f857dc1-69e8-4390-af83-2b1434b897c3}</Project>
+    </ProjectReference>
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
@@ -80,7 +85,7 @@
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
-      <AdditionalIncludeDirectories>$(ProjectDir)\include; $(SolutionDir)\Core\include; $(SolutionDir)\Rendering\include; $(SolutionDir)vendor\GLFW\include; $(SolutionDir)\vendor\glad\include;</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)include; $(SolutionDir)Core\include; $(SolutionDir)Rendering\include; $(SolutionDir)vendor\GLFW\include; $(SolutionDir)vendor\glad\include; $(SolutionDir)vendor\glm\include;</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
     </ClCompile>
     <Link>
@@ -104,7 +109,7 @@
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
-      <AdditionalIncludeDirectories>$(ProjectDir)\include; $(SolutionDir)\Core\include; $(SolutionDir)\Rendering\include; $(SolutionDir)vendor\GLFW\include; $(SolutionDir)\vendor\glad\include;</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)include; $(SolutionDir)Core\include; $(SolutionDir)Rendering\include; $(SolutionDir)vendor\GLFW\include; $(SolutionDir)vendor\glad\include; $(SolutionDir)vendor\glm\include;</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
     </ClCompile>
     <Link>

@@ -39,7 +39,6 @@ namespace Engine::Sandbox
 			m_MainScene.Render();
 
 			//auto& cameraPos = m_MainScene.m_SceneCamera->GetPosition();
-
 			//CRTN_LOG_DEBUG("Camera Pos: X [%.2f] | Y [%.2f] | Z [%.2f]", cameraPos.x, cameraPos.y, cameraPos.z);
 		}
 

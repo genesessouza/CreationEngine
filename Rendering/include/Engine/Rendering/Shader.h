@@ -20,13 +20,29 @@ namespace Engine::Rendering
 		View,
 		Projection,
 		ViewProjection,
-		Transform,
-		Color,
-		ColorOverride
+		Normal,
+		Color
 	};
 
 	class Shader
 	{
+	public:
+		struct SceneUniformLocations
+		{
+			int ViewProjection;
+			int ViewPos;
+
+			int HasDirLight;
+			int DirLightDir;
+			int DirLightColor;
+
+			int PointLightCount;
+			int PointLightPos[8];
+			int PointLightColor[8];
+			int PointLightIntensity[8];
+		};
+	public:
+		SceneUniformLocations sceneUniforms;
 	public:
 		Shader(const std::string& shaderFilepath);
 		~Shader();
@@ -34,23 +50,21 @@ namespace Engine::Rendering
 		void Bind() const;
 		void Unbind() const;
 
-		void GetShaderInfoLog(const std::string& uniformName, unsigned int location) const;
+		int GetUniformLocation(const std::string& name);
+		
+		void DefineUniformMat3(int loc, const glm::mat3& matrix);
+		void DefineUniformMat4(int loc, const glm::mat4& matrix);
 
-		void DefineUniformMat3(const std::string& uniformName, const glm::mat3& matrix) const;
-		void DefineUniformMat4(const std::string& uniformName, const glm::mat4& matrix) const;
+		void DefineUniformVec3(int loc, const glm::vec3& vector);
+		void DefineUniformVec4(int loc, const glm::vec4& vector);
 
-		void DefineUniformVec3(const std::string& uniformName, const glm::vec3& vector) const;
-		void DefineUniformVec4(const std::string& uniformName, const glm::vec4& vector) const;
+		void DefineUniformBool(int loc, const bool override);
 
-		void DefineUniformBool(const std::string& uniformName, const bool override) const;
+		void DefineUniformInt(int loc, const int value);
+		void DefineUniformFloat(int loc, const float value);
+		void DefineUniformFloat3(int loc, const glm::vec3& value);
 
-		void DefineUniformInt(const std::string& uniformName, const int value) const;
-		void DefineUniformFloat(const std::string& uniformName, const float value) const;
-		void DefineUniformFloat3(const std::string& uniformName, const glm::vec3& value) const;
-
-		const glm::vec3 GetUniformVec3(const std::string& uniformName) const;
-		const glm::vec4 GetUniformVec4(const std::string& uniformName) const;
-		const glm::mat4 GetUniformMat4(const std::string& uniformName) const;
+		int GetUniformMat4(const std::string& uniformName);
 
 		static std::shared_ptr<Shader> CreateDefaultShader();
 	public:
@@ -60,27 +74,27 @@ namespace Engine::Rendering
 		{
 			switch (uniform)
 			{
-			case Model:
-				return "u_ModelMatrix";
-				break;
-			case View:
-				return "u_ViewMatrix";
-				break;
-			case Projection:
-				return "u_ProjectionMatrix";
-				break;
-			case ViewProjection:
-				return "u_ViewProjectionMatrix";
-				break;
-			case Transform:
-				return "u_Transform";
-				break;
-			case Color:
-				return "u_Color";
-				break;
-			default:
-				return "Invalid uniform name!";
-				break;
+				case Model:
+					return "u_ModelMatrix";
+					break;
+				case View:
+					return "u_ViewMatrix";
+					break;
+				case Projection:
+					return "u_ProjectionMatrix";
+					break;
+				case ViewProjection:
+					return "u_ViewProjectionMatrix";
+					break;
+				case Normal:
+					return "u_NormalMatrix";
+					break;
+				case Color:
+					return "u_Color";
+					break;
+				default:
+					return "Invalid uniform name!";
+					break;
 			}
 		}
 	private:
@@ -93,5 +107,8 @@ namespace Engine::Rendering
 		std::string m_ShaderFilepath;
 
 		uint32_t m_RendererId;
+	private:
+		std::unordered_map<std::string, int> m_UniformLocationCache;
+
 	};
 }

@@ -14,24 +14,11 @@ namespace Engine::Rendering
 {
 	std::shared_ptr<Shader> Shader::CreateDefaultShader()
 	{
-		//auto shader = std::make_shared<Shader>("D:/Dev/CreationEngine/_Assets/Shaders/Dummy-Test.cshader");
+		//auto shader = std::make_shared<Shader>("D:/Dev/CreationEngine/_Assets/Shaders/Debug.cshader");
 		auto shader = std::make_shared<Shader>("D:/Dev/CreationEngine/_Assets/Shaders/Default-Lit.cshader");
 		CRTN_CHECK_PTR(shader);
 
 		return shader;
-	}
-
-	void Shader::GetShaderInfoLog(const std::string& uniformName, unsigned int location) const
-	{
-		if (location == -1)
-		{
-			int messageLength;
-			glGetShaderiv(m_RendererId, GL_INFO_LOG_LENGTH, &messageLength);
-			char* message = (char*)_malloca(messageLength * sizeof(char));
-
-			glGetShaderInfoLog(m_RendererId, messageLength, &messageLength, message);
-			CRTN_LOG_ERROR("[SHADER]: Uniform [%s] not found!: %s", uniformName.c_str(), message);
-		}
 	}
 
 	Shader::Shader(const std::string& shaderFilepath)
@@ -60,7 +47,8 @@ namespace Engine::Rendering
 	ShaderSource Shader::ParseShader() const
 	{
 		std::ifstream stream(m_ShaderFilepath);
-		if (!stream.is_open()) {
+		if (!stream.is_open())
+		{
 			CRTN_ASSERT(false, "Could not open shader file: %s", m_ShaderFilepath.c_str());
 			return { "", "" };
 		}
@@ -102,8 +90,6 @@ namespace Engine::Rendering
 	uint32_t Shader::CompileShader(unsigned int type, const std::string& shaderSource)
 	{
 		unsigned int shaderId = glCreateShader(type);
-		glObjectLabel(GL_SHADER, shaderId, -1, m_ShaderFilepath.c_str());
-
 		const char* source = shaderSource.c_str();
 
 		glShaderSource(shaderId, 1, &source, nullptr);
@@ -121,8 +107,8 @@ namespace Engine::Rendering
 			glGetShaderInfoLog(shaderId, messageLength, &messageLength, message.data());
 
 			const char* shaderType = (type == GL_VERTEX_SHADER) ? "Vertex Shader" : "Fragment Shader";
-			
-			CRTN_LOG_ERROR("Compilation failed: File: %s - %s:\n%s", m_ShaderFilepath.c_str(), (type == GL_VERTEX_SHADER ? "Vertex" : "Fragment"), message.data());	
+
+			CRTN_LOG_ERROR("Compilation failed: File: %s - %s:\n%s", m_ShaderFilepath.c_str(), (type == GL_VERTEX_SHADER ? "Vertex" : "Fragment"), message.data());
 			glDeleteShader(shaderId);
 
 			CRTN_ASSERT(false, "Shader compilation failed!");
@@ -172,122 +158,73 @@ namespace Engine::Rendering
 		glDetachShader(m_RendererId, fragmentShader);
 	}
 
-	void Shader::DefineUniformMat3(const std::string& uniformName, const glm::mat3& matrix) const
+	int Shader::GetUniformLocation(const std::string& name)
 	{
-		unsigned int location = glGetUniformLocation(m_RendererId, uniformName.c_str());
-		glUseProgram(m_RendererId);
+		auto it = m_UniformLocationCache.find(name);
 
-		GetShaderInfoLog(uniformName, location);
-		glUniformMatrix4fv(location, 1, GL_FALSE, glm::value_ptr(matrix));
+		if (it != m_UniformLocationCache.end())
+			return it->second;
+
+		int loc = glGetUniformLocation(m_RendererId, name.c_str());
+		
+		// ERROR HANDLING
+		if (loc == -1)
+		{
+			int messageLength;
+			glGetShaderiv(m_RendererId, GL_INFO_LOG_LENGTH, &messageLength);
+			char* message = (char*)_malloca(messageLength * sizeof(char));
+
+			glGetShaderInfoLog(m_RendererId, messageLength, &messageLength, message);
+			CRTN_LOG_ERROR("[SHADER]: Uniform [%s] not found!: %s", name.c_str(), message);
+		}
+
+		m_UniformLocationCache[name] = loc;
+		return loc;
 	}
 
-	void Shader::DefineUniformMat4(const std::string& uniformName, const glm::mat4& matrix) const
+	void Shader::DefineUniformMat3(int loc, const glm::mat3& matrix)
 	{
-		unsigned int location = glGetUniformLocation(m_RendererId, uniformName.c_str());
-		glUseProgram(m_RendererId);
-
-		GetShaderInfoLog(uniformName, location);
-		glUniformMatrix4fv(location, 1, GL_FALSE, glm::value_ptr(matrix));
+		glUniformMatrix3fv(loc, 1, GL_FALSE, &matrix[0][0]);
+	}
+	
+	void Shader::DefineUniformMat4(int loc, const glm::mat4& matrix)
+	{
+		glUniformMatrix4fv(loc, 1, GL_FALSE, &matrix[0][0]);
 	}
 
-	void Shader::DefineUniformVec3(const std::string& uniformName, const glm::vec3& vector) const
+	void Shader::DefineUniformVec3(int loc, const glm::vec3& vector)
 	{
-		unsigned int location = glGetUniformLocation(m_RendererId, uniformName.c_str());
-		glUseProgram(m_RendererId);
-
-		GetShaderInfoLog(uniformName, location);
-		glUniform3fv(location, 1, glm::value_ptr(vector));
+		glUniform3fv(loc, 1, &vector[0]);
 	}
 
-	void Shader::DefineUniformVec4(const std::string& uniformName, const glm::vec4& matrix) const
+	void Shader::DefineUniformVec4(int loc, const glm::vec4& vector)
 	{
-		unsigned int location = glGetUniformLocation(m_RendererId, uniformName.c_str());
-		glUseProgram(m_RendererId);
-
-		GetShaderInfoLog(uniformName, location);
-		glUniform4fv(location, 1, glm::value_ptr(matrix));
+		glUniform4fv(loc, 1, &vector[0]);
 	}
 
-	void Shader::DefineUniformBool(const std::string& uniformName, bool value) const
+	void Shader::DefineUniformBool(int loc, const bool override)
 	{
-		unsigned int location = glGetUniformLocation(m_RendererId, uniformName.c_str());
-		glUseProgram(m_RendererId);
-
-		GetShaderInfoLog(uniformName, location);
-
-		if (location != -1)
-			glUniform1i(location, (int)value); // OpenGL treats bool as int
+		glUniform1i(loc, override ? 1 : 0);
 	}
 
-	void Shader::DefineUniformInt(const std::string& uniformName, const int value) const
+	void Shader::DefineUniformInt(int loc, const int value)
 	{
-		unsigned int location = glGetUniformLocation(m_RendererId, uniformName.c_str());
-		glUseProgram(m_RendererId);
-
-		GetShaderInfoLog(uniformName, location);
-
-		if (location != -1)
-			glUniform1i(location, value);
+		glUniform1i(loc, value);
 	}
 
-	void Shader::DefineUniformFloat(const std::string& uniformName, const float value) const
+	void Shader::DefineUniformFloat(int loc, const float value)
 	{
-		unsigned int location = glGetUniformLocation(m_RendererId, uniformName.c_str());
-		glUseProgram(m_RendererId);
-
-		GetShaderInfoLog(uniformName, location);
-
-		if (location != -1)
-			glUniform1f(location, value);
+		glUniform1f(loc, value);
 	}
 
-	void Shader::DefineUniformFloat3(const std::string& uniformName, const glm::vec3& value) const
+	void Shader::DefineUniformFloat3(int loc, const glm::vec3& value)
 	{
-		unsigned int location = glGetUniformLocation(m_RendererId, uniformName.c_str());
-		glUseProgram(m_RendererId);
-
-		GetShaderInfoLog(uniformName, location);
-
-		if (location != -1)
-			glUniform3f(location, value.x, value.y, value.z);
+		glUniform3f(loc, value.x, value.y, value.z);
 	}
 
-	const glm::vec3 Shader::GetUniformVec3(const std::string& uniformName) const
+	// MAYBE...?
+	int Shader::GetUniformMat4(const std::string& uniformName)
 	{
-		unsigned int location = glGetUniformLocation(m_RendererId, uniformName.c_str());
-		glUseProgram(m_RendererId);
-
-		GetShaderInfoLog(uniformName, location);
-
-		float vector[3];
-		glGetUniformfv(location, 1, vector);
-
-		return glm::vec3(vector[0], vector[1], vector[2]);
-	}
-
-	const glm::vec4 Shader::GetUniformVec4(const std::string& uniformName) const
-	{
-		unsigned int location = glGetUniformLocation(m_RendererId, uniformName.c_str());
-		glUseProgram(m_RendererId);
-
-		GetShaderInfoLog(uniformName, location);
-
-		float vector[4];
-		glGetUniformfv(location, 1, vector);
-
-		return glm::vec4(vector[0], vector[1], vector[2], vector[3]);
-	}
-
-	const glm::mat4 Shader::GetUniformMat4(const std::string& uniformName) const
-	{
-		unsigned int location = glGetUniformLocation(m_RendererId, uniformName.c_str());
-		glUseProgram(m_RendererId);
-
-		GetShaderInfoLog(uniformName, location);
-
-		float matrix[16];
-		glGetUniformfv(location, 1, matrix);
-
-		return glm::mat4(glm::make_mat4(matrix));
+		return GetUniformLocation(uniformName);
 	}
 }

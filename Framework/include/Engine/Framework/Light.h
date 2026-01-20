@@ -7,11 +7,11 @@ namespace Engine::Framework::Lights
     class DirectionalLight : public GameObject
     {
     public:
-        DirectionalLight()
+        DirectionalLight() : GameObject(ObjectType::Null)
         {
-            m_Direction = glm::vec3(4, 7, 3);
+            m_Direction = glm::vec3(-10, -30, 30);
             m_Color = glm::vec4(1.00, 0.95, 0.70, 1.0);
-            m_Intensity = 1.5f;
+            m_Intensity = 3.0f;
         }
 
         virtual ~DirectionalLight() = default;
@@ -33,7 +33,7 @@ namespace Engine::Framework::Lights
     class PointLight : public GameObject
     {
     public:
-        PointLight()
+        PointLight() : GameObject(ObjectType::PointLight)
         {
             m_Color = glm::vec4(1.00, 0.95, 0.70, 1.0);
             m_Intensity = 10.0f;

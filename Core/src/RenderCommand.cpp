@@ -1,6 +1,7 @@
 #include "Engine/Core/RenderCommand.h"
 
 #include <Engine/Rendering/RendererAPI.h>
+#include <Engine/Rendering/Renderer.h>
 
 #include <memory>
 
@@ -11,5 +12,10 @@ namespace Engine::Core
 	void RenderCommand::SetViewport(uint32_t x, uint32_t y, uint32_t width, uint32_t height)
 	{
 		s_RendererAPI->SetViewport(x, y, width, height);
+	}
+
+	void RenderCommand::MarkFramebufferDirty()
+	{
+		Engine::Rendering::Renderer::MarkCameraDirty();
 	}
 }

@@ -29,10 +29,10 @@ namespace Engine::Core::Event
 		uint32_t m_Width, m_Height;
 	};
 
-	class WindowMovedEvent : public Event
+	class WindowMoveEvent : public Event
 	{
 	public:
-		WindowMovedEvent(uint32_t x, uint32_t y)
+		WindowMoveEvent(uint32_t x, uint32_t y)
 			: m_WindowX(x), m_WindowY(y) {
 		}
 

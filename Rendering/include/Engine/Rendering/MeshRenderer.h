@@ -6,6 +6,7 @@
 
 #include <Engine/Framework/Transform.h>
 #include <Engine/Framework/Camera.h>
+#include <Engine/Framework/MeshLibrary.h>
 
 #include <memory>
 
@@ -14,8 +15,13 @@ namespace Engine::Rendering
     class MeshRenderer
     {
     public:
-        MeshRenderer()
-            : m_MeshMat(nullptr)
+        struct MeshUniformLocations
+        {
+            int Model;
+            int Normal;
+        };
+
+        MeshRenderer() : m_MeshMat(nullptr), m_MeshUniforms()
         {
         }
 
@@ -29,7 +35,12 @@ namespace Engine::Rendering
                 m_MeshMat->Init();
         }
 
+        void InitUniforms();
+
         void Draw(const Engine::Framework::Transform& transform) const;
+
+        const std::shared_ptr<Material> GetMaterial() const { return m_MeshMat; }
+        const void SetMesh(const std::shared_ptr<MeshGPU>& mesh) { m_Mesh = mesh; }
 
         static std::shared_ptr<MeshRenderer> Create() 
         { 
@@ -38,8 +49,10 @@ namespace Engine::Rendering
 
             return meshRenderer;
         }
-    public:
+    private:
         std::shared_ptr<MeshGPU> m_Mesh;
         std::shared_ptr<Material> m_MeshMat;
+
+        MeshUniformLocations m_MeshUniforms;
     };
 }

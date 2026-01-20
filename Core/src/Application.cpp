@@ -53,19 +53,23 @@ namespace Engine::Core
 			fpsTimer += deltaTime;
 			frameCount++;
 
-			if (fpsTimer >= 0.5f)
+			if (fpsTimer >= 1.0f)
 			{
 				float fps = frameCount / fpsTimer;
 
 				char title[128];
-				snprintf(title, sizeof(title), "CreationEngine | FPS: %.2f", fps);
+				snprintf(
+					title, sizeof(title), "CreationEngine - [%d x %d] | FPS: %.2f - %.3fms", 
+					m_Window->GetWindowSize().width, m_Window->GetWindowSize().height, fps, 
+					(fpsTimer / frameCount) * 1000.0f
+				);
 				m_Window->SetTitle(title);
 
 				fpsTimer = 0.0f;
 				frameCount = 0;
 			}
 
-			OnUpdate();
+			OnUpdate(deltaTime);
 			m_Window->OnUpdate();
 
 			for (Layer::Layer* layer : m_LayerStack)
@@ -78,26 +82,37 @@ namespace Engine::Core
 		return *s_Instance;
 	}
 
-	bool Application::OnFramebufferResize(Event::FramebufferResizeEvent e)
+	void Application::OnUpdate(float deltaTime)
 	{
-		if (e.GetWidth() == 0 || e.GetHeight() == 0)
-			return false;
+		ProcessInput(deltaTime);
+		ProcessWindowChanges();
 
-		RenderCommand::SetViewport(0, 0, e.GetWidth(), e.GetHeight());
-		return false;
-	}
+		if (m_FramebufferState.Resized)
+		{
+			RenderCommand::SetViewport(
+				0, 0,
+				m_FramebufferState.Width,
+				m_FramebufferState.Height
+			);
 
-	void Application::OnUpdate()
-	{
-		// Nothing for now
+			//RenderCommand::SetViewport(0, 0, m_Window->GetWindowSize().width, m_Window->GetWindowSize().height);
+			Engine::Core::RenderCommand::MarkFramebufferDirty();
+			m_FramebufferState.Resized = false;
+		}
 	}
 
 	void Application::OnEvent(Event::Event& e)
 	{
 		Event::EventDispatcher dispatcher(e);
+
 		dispatcher.Dispatch<Event::WindowCloseEvent>(BIND_EVENT_FN(Application::OnWindowClose));
+		dispatcher.Dispatch<Event::WindowResizeEvent>(BIND_EVENT_FN(Application::OnWindowResize));
+		dispatcher.Dispatch<Event::WindowMoveEvent>(BIND_EVENT_FN(Application::OnWindowMove));
 
 		dispatcher.Dispatch<Event::FramebufferResizeEvent>(BIND_EVENT_FN(Application::OnFramebufferResize));
+
+		dispatcher.Dispatch<Event::MouseMovedEvent>(BIND_EVENT_FN(Application::OnMouseMove));
+		dispatcher.Dispatch<Event::MouseScrolledEvent>(BIND_EVENT_FN(Application::OnMouseScroll));
 
 		for (auto it = m_LayerStack.rbegin(); it != m_LayerStack.rend(); ++it)
 		{
@@ -109,9 +124,84 @@ namespace Engine::Core
 		//CRTN_LOG_TRACE("Application registered event: <%s>", e.ToString().c_str());
 	}
 
+	void Application::ProcessInput(float deltaTime)
+	{
+		if (m_MouseState.Moved)
+			m_MouseState.Moved = false;
+
+		if (m_MouseState.Scrolled)
+			m_MouseState.Scrolled = false;
+	}
+
+	void Application::ProcessWindowChanges()
+	{
+		if (m_WindowState.Resized)
+		{
+			RenderCommand::SetViewport(0, 0, m_Window->GetWindowSize().width, m_Window->GetWindowSize().height);
+			m_WindowState.Resized = false;
+		}
+	}
+
+	bool Application::OnMouseMove(Event::MouseMovedEvent& e)
+	{
+		m_MouseState.Delta = { e.GetX() - m_MouseState.Position.x, e.GetY() - m_MouseState.Position.y };
+
+		m_MouseState.Position = { e.GetX(), e.GetY() };
+
+		m_MouseState.Moved = true;
+
+		return false;
+	}
+
+	bool Application::OnMouseScroll(Event::MouseScrolledEvent& e)
+	{
+		m_MouseState.ScrollDelta = e.GetYOffset();
+
+		m_MouseState.Scrolled = true;
+
+		return false;
+	}
+
+	bool Application::OnFramebufferResize(Event::FramebufferResizeEvent e)
+	{
+		if (e.GetWidth() == 0 || e.GetHeight() == 0)
+			return false;
+
+		m_FramebufferState.Width = e.GetWidth();
+		m_FramebufferState.Height = e.GetHeight();
+
+		m_FramebufferState.Resized = true;
+
+		return false;
+	}
+
+	bool Application::OnWindowMove(Event::WindowMoveEvent& e)
+	{
+		m_WindowState.PosX = e.GetX();
+		m_WindowState.PosY = e.GetY();
+
+		m_WindowState.Moved = true;
+
+		return false;
+	}
+
+	bool Application::OnWindowResize(Event::WindowResizeEvent& e)
+	{
+		if (e.GetWidth() == 0 || e.GetHeight() == 0)
+			return false;
+
+		m_WindowState.Width = e.GetWidth();
+		m_WindowState.Height = e.GetHeight();
+
+		m_WindowState.Resized = true;
+
+		return false;
+	}
+
 	bool Application::OnWindowClose(Event::WindowCloseEvent& e)
 	{
 		m_Running = false;
+
 		return m_Running;
 	}
 }
