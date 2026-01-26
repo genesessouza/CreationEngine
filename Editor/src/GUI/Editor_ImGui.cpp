@@ -58,15 +58,41 @@ namespace Engine::Editor
 			{
 				if (ImGui::MenuItem("Scene"))
 				{
-					/* EXAMPLE CODE FOR SCENE CREATION
+					//auto newScene = std::make_shared<Engine::Framework::Scene>();
+					//newScene->Init();
 
-
-
-					*/
+					//auto& currentScene = Engine::Framework::Scene::Get();
+					//currentScene.SetActiveScene(newScene.get());
 				}
-				if (ImGui::MenuItem("Game Object"))
-				{
 
+				if (ImGui::BeginMenu("Light"))
+				{
+					if (ImGui::MenuItem("Point Light"))
+					{
+						auto purpleLight = Engine::Framework::Scene::Get().CreateEntity<Engine::Framework::Lights::PointLight>("[Point Light] New Light");
+						purpleLight->GetTransform().SetPosition({ 0.0f, 1.0f, -3.0f });
+						purpleLight->SetColor({ 1.0f, 1.0f, 1.0f, 1.0f });
+						purpleLight->SetIntensity(10.0f);
+					}
+					ImGui::EndMenu();
+				}
+
+				if (ImGui::BeginMenu("Primitives"))
+				{
+					if (ImGui::MenuItem("3D Cube"))
+					{
+						auto newCube = Engine::Framework::Scene::Get().CreateEntity<Engine::Framework::GameObject>("[GameObject] New Cube");
+						newCube->AddComponent<Engine::Framework::Physics::CubeCollider>();
+						newCube->AddComponent<Engine::Framework::Physics::PhysicsComponent>();
+						newCube->GetTransform().SetPosition({ 0.0f, 1.0f, 0.0f });
+						newCube->GetTransform().SetScale({ 1.0f, 1.0f, 1.0f });
+
+						newCube->Init();
+
+						newCube->GetMeshRenderer()->SetMesh(Engine::Framework::MeshLibrary::InstantiateCube());
+						newCube->GetMeshRenderer()->GetMaterial()->SetColor(glm::vec4(0.2f, 0.2f, 0.2f, 1)); // Sets ground color to dark grey
+					}
+					ImGui::EndMenu();
 				}
 				ImGui::EndMenu();
 			}
@@ -205,6 +231,8 @@ namespace Engine::Editor
 			DrawDirectionalLightUI(dirLight);
 		else if (auto gameObject = std::dynamic_pointer_cast<Engine::Framework::GameObject>(m_SelectedEntity))
 			DrawGameObjectUI(gameObject);
+		else if (auto camera = std::dynamic_pointer_cast<Engine::Framework::Camera>(m_SelectedEntity))
+			DrawCameraUI(camera);
 
 		ImGui::End();
 	}
@@ -268,9 +296,13 @@ namespace Engine::Editor
 		if (ImGui::CollapsingHeader("Directional Light", ImGuiTreeNodeFlags_DefaultOpen))
 		{
 			glm::vec3 dir = light->GetTransform().GetRotation();
+			float intensity = light->GetIntensity();
 
 			if (ImGui::DragFloat3("Direction", glm::value_ptr(dir), 0.05f))
 				light->GetTransform().SetRotation(dir);
+
+			if (ImGui::SliderFloat("Intensity", &intensity, 0.5f, 30.0f))
+				light->SetIntensity(intensity);
 		}
 	}
 
@@ -367,6 +399,25 @@ namespace Engine::Editor
 
 				ImGui::TreePop();
 			}
+		}
+	}
+
+	void EditorGUI::DrawCameraUI(std::shared_ptr<Engine::Framework::Camera> cam)
+	{
+		if (ImGui::CollapsingHeader("Parameters", ImGuiTreeNodeFlags_DefaultOpen))
+		{
+			auto camFov = cam->GetFOV();
+			auto camNear = cam->GetNear();
+			auto camFar = cam->GetFar();
+
+			if (ImGui::SliderFloat("Field of View", &camFov, 10.0f, 170.0f))
+				cam->SetFOV(camFov);
+
+			if (ImGui::SliderFloat("Near Plane", &camNear, 0.001f, 10.0f))
+				cam->SetNear(camNear);
+
+			if (ImGui::SliderFloat("Far Plane", &camFar, 30.0f, 1000.0f))
+				cam->SetFar(camFar);
 		}
 	}
 

@@ -39,6 +39,7 @@ namespace Engine::Editor
 		void DrawPointLightUI(std::shared_ptr<Engine::Framework::Lights::PointLight> light);
 		void DrawDirectionalLightUI(std::shared_ptr<Engine::Framework::Lights::DirectionalLight> light);
 		void DrawGameObjectUI(std::shared_ptr<Engine::Framework::GameObject> obj);
+		void DrawCameraUI(std::shared_ptr<Engine::Framework::Camera> obj);
 
 		static EditorGUI& Get();
 	private:

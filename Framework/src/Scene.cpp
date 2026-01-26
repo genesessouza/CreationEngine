@@ -64,7 +64,7 @@ namespace Engine::Framework
 
 				if (colA && colB)
 				{
-					if(!colA->IsEnabled() || !colB->IsEnabled())
+					if (!colA->IsEnabled() || !colB->IsEnabled())
 						continue;
 
 					if (colA->IsStatic() && colB->IsStatic())
@@ -76,14 +76,43 @@ namespace Engine::Framework
 					glm::vec3 overlap(0.0f);
 					glm::vec3 hitPoint(0.0f);
 
-					if (colA->CheckCollision(colB.get(), overlap, hitPoint))
+					auto physA = objA->GetComponent<Physics::PhysicsComponent>();
+					auto physB = objB->GetComponent<Physics::PhysicsComponent>();
+
+					float dist = glm::distance(colA->GetOwner()->GetTransform().GetPosition(), colB->GetOwner()->GetTransform().GetPosition());
+					float radius =
+						glm::max(colA->GetOwner()->GetTransform().GetScale().x, colA->GetOwner()->GetTransform().GetScale().y) +
+						glm::max(colB->GetOwner()->GetTransform().GetScale().x, colB->GetOwner()->GetTransform().GetScale().y);
+
+					if (m_Collided && dist > radius)
 					{
-						auto physA = objA->GetComponent<Physics::PhysicsComponent>();
-						auto physB = objB->GetComponent<Physics::PhysicsComponent>();
+						m_Collided = false;
+						if (!physA->IsStatic())
+							physA->SetEnabled(true);
+						else if (!physB->IsStatic())
+							physB->SetEnabled(true);
+
+						//CRTN_LOG_INFO("COLLIDED BUT FAR AWAY. REACTIVATING PHYSICS.");
+					}
+
+					if (colA->CheckCollision(colB.get(), overlap, hitPoint) && !m_Collided)
+					{
+						//CRTN_LOG_WARNING("COLLIDED! CALLING RESOLVE NOW");
 
 						ResolveCollision(physA.get(), physB.get(), overlap, hitPoint);
 
-						Engine::Framework::Debugging::AddHitPoint(hitPoint, 0.1f, { 1.0f, 0.0f, 0.0f, 1.0f }, 1.0f);
+						//Engine::Framework::Debugging::AddHitPoint(hitPoint, 0.1f, { 1.0f, 0.0f, 0.0f, 1.0f }, 1.0f);
+						m_Collided = true;
+					}
+
+					if (dist < radius && m_Collided)
+					{
+						if (!physA->IsStatic())
+							physA->SetEnabled(false);
+						else if (!physB->IsStatic())
+							physB->SetEnabled(false);
+
+						//CRTN_LOG_ERROR("COLLIDED BUT TOO CLOSE. DEACTIVATING PHYSICS.");
 					}
 				}
 			}

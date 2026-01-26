@@ -23,31 +23,31 @@ namespace Engine::Sandbox
 			// POINT LIGHTS 
 			{
 				auto redLight = CreateEntity<Engine::Framework::Lights::PointLight>("[Point Light] Red Light");
-				//redLight->SetEnabled(false);
+				redLight->SetEnabled(false);
 				redLight->GetTransform().SetPosition({ -3.0f, 1.0f, 0.0f });
 				redLight->SetColor({ 1.0f, 0.0f, 0.0f, 1.0f });
 				redLight->SetIntensity(10.0f);
 
 				auto greenLight = CreateEntity<Engine::Framework::Lights::PointLight>("[Point Light] Green Light");
-				//greenLight->SetEnabled(false);
+				greenLight->SetEnabled(false);
 				greenLight->GetTransform().SetPosition({ 0.0f, 3.0f, 0.0f });
 				greenLight->SetColor({ 0.0f, 1.0f, 0.0f, 1.0f });
 				greenLight->SetIntensity(10.0f);
 
 				auto blueLight = CreateEntity<Engine::Framework::Lights::PointLight>("[Point Light] Blue Light");
-				//blueLight->SetEnabled(false);
+				blueLight->SetEnabled(false);
 				blueLight->GetTransform().SetPosition({ 3.0f, 1.0f, 0.0f });
 				blueLight->SetColor({ 0.0f, 0.0f, 1.0f, 1.0f });
 				blueLight->SetIntensity(10.0f);
 
 				auto purpleLight = CreateEntity<Engine::Framework::Lights::PointLight>("[Point Light] Purple Light");
-				//purpleLight->SetEnabled(false);
+				purpleLight->SetEnabled(false);
 				purpleLight->GetTransform().SetPosition({ 0.0f, 1.0f, -3.0f });
 				purpleLight->SetColor({ 0.5f, 0.0f, 0.5f, 1.0f });
 				purpleLight->SetIntensity(10.0f);
 
 				auto cyanLight = CreateEntity<Engine::Framework::Lights::PointLight>("[Point Light] Cyan Light");
-				//cyanLight->SetEnabled(false);
+				cyanLight->SetEnabled(false);
 				cyanLight->GetTransform().SetPosition({ 0.0f, 1.0f, 3.0f });
 				cyanLight->SetColor({ 0.0f, 0.5f, 0.5f, 1.0f });
 				cyanLight->SetIntensity(10.0f);

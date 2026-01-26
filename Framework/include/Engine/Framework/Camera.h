@@ -20,10 +20,14 @@ namespace Engine::Framework
 
         void SetViewportSize(uint32_t width, uint32_t height);
         
-        const void SetFOV(float newFOV) { m_FOV = newFOV; }
+        void SetFOV(float newFOV) { m_FOV = newFOV; }
+        float GetFOV() const { return m_FOV; }
         
-        const void SetNear(float newNearPlane) { m_NearPlane = newNearPlane; }
-        const void SetFar(float newFarPlane) { m_FarPlane = newFarPlane; }
+        void SetNear(float newNearPlane) { m_NearPlane = newNearPlane; }
+        float GetNear() const { return m_NearPlane; }
+
+        void SetFar(float newFarPlane) { m_FarPlane = newFarPlane; }
+        float GetFar() const { return m_FarPlane; }
 
         bool IsDirty() const { return m_Transform.IsDirty(); }
         void ClearDirty() { m_Transform.ClearDirty(); }

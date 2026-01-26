@@ -80,5 +80,7 @@ namespace Engine::Framework
     private:
         std::vector<std::shared_ptr<Entity>> m_Entities;
         static Scene* s_ActiveScene;
+
+        bool m_Collided;
     };
 }
