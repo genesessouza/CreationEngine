@@ -16,7 +16,7 @@ namespace Engine::Framework
 	class Camera : public Component
 	{
 	public:
-		Camera() = default;
+		Camera() : Component(), m_AspectRatio(16.0f / 9.0f), m_FOV(60.0f), m_FarPlane(100.0f), m_NearPlane(0.1f) {}
 		virtual ~Camera() = default;
 
 		void Init() override;

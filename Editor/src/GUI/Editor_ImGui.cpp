@@ -40,7 +40,7 @@ namespace Engine::Editor
 		{
 			ImGuiIO& io = ImGui::GetIO();
 			io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
-			io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
+			//io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
 
 			ImGui::StyleColorsDark();
 
@@ -81,8 +81,9 @@ namespace Engine::Editor
 
 						auto newLight = newLightGo->AddComponent<Engine::Framework::Lights::PointLight>();
 						newLight->SetIntensity(10.0f);
-						newLight->SetColor({ 1.0f, 1.0f, 1.0f, 1.0f }, newLight->GetIntensity());
+						newLight->SetColor({ 1.0f, 1.0f, 1.0f, 1.0f });
 
+						Engine::Framework::Scene::Get().AddPointLight(newLight);
 						Engine::Framework::Scene::Get().AddEntity(std::move(newLightGo));
 					}
 					ImGui::EndMenu();
@@ -228,10 +229,18 @@ namespace Engine::Editor
 			glm::vec3 scl = transform.GetScale();
 
 			if (ImGui::DragFloat3("Position", glm::value_ptr(pos), 0.1f))
-				transform.SetPosition(pos);
+			{
+				glm::vec3 newPos = pos - transform.GetPosition();
+				transform.Translate(newPos, false);
+				pos = newPos;
+			}
 
-			if (ImGui::DragFloat3("Rotation", glm::value_ptr(rot), 0.1f))
-				transform.SetRotation(rot);
+			if (ImGui::DragFloat3("Rotation", glm::value_ptr(rot)))
+			{
+				glm::vec3 newRot = rot - transform.GetRotation();
+				transform.Rotate(newRot);
+				rot = newRot;
+			}
 
 			if (ImGui::DragFloat3("Scale", glm::value_ptr(scl), 0.1f, 0.001f))
 				transform.SetScale(scl);
@@ -392,7 +401,7 @@ namespace Engine::Editor
 					glm::vec4 color = light->GetColor();
 
 					if (ImGui::ColorEdit4("Color", glm::value_ptr(color)))
-						light->SetColor(color, intensity);
+						light->SetColor(color);
 
 					if (ImGui::DragFloat3("Direction", glm::value_ptr(dir), 0.05f))
 						light->SetDirection(dir);
@@ -420,7 +429,7 @@ namespace Engine::Editor
 
 					if (ImGui::SliderFloat("Far Plane", &camFar, 30.0f, 1000.0f))
 						cam->SetFar(camFar);
-				
+
 					ImGui::TreePop();
 				}
 			}

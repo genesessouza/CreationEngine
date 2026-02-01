@@ -50,10 +50,31 @@ namespace Engine::Core::Event
     protected:
         int m_Button;
     };
+    class MouseReleasedEvent : public Event
+    {
+    public:
+        MouseReleasedEvent(int button)
+            : m_Button(button) {
+        }
+
+        int GetMouseButton() const { return m_Button; }
+
+        std::string ToString() const override
+        {
+            std::stringstream ss;
+            ss << "Mouse Button: [" << m_Button << "] released!";
+            return ss.str();
+        }
+
+        EVENT_CLASS_TYPE(MouseButtonReleased)
+        EVENT_CLASS_CATEGORY(EventInput | EventMouse | EventMouseButton)
+    protected:
+        int m_Button;
+    };
 
     class MouseScrolledEvent : public Event
     {
-        public:
+    public:
         MouseScrolledEvent(float xOffset, float yOffset)
             : m_XOffset(xOffset), m_YOffset(yOffset) {
         }

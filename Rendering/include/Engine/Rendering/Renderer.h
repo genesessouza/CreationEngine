@@ -39,6 +39,8 @@ namespace Engine::Rendering
 			// Directional Light
 			glm::vec3 DirLightDirection;
 			glm::vec4 DirLightColor;
+			float DirLightIntensity;
+
 			bool HasDirLight = false;
 
 			// Point Lights

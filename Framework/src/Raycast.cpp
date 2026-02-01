@@ -16,8 +16,6 @@ namespace Engine::Framework
 		RayResult result;
 		result.Distance = std::numeric_limits<float>::max();
 
-		if (!Engine::Editor::GUI::GUIUtils::IsMouseInsideViewport()) return result;
-
 		glm::vec2 relativeMousePos = Engine::Editor::GUI::GUIUtils::GetMouseRelativePos();
 		glm::vec2 vSize = Engine::Editor::GUI::GUIUtils::GetViewportSize();
 

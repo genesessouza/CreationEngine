@@ -9,13 +9,8 @@ namespace Engine::Framework
 {
 	void Camera::Init()
 	{
-		m_AspectRatio = 16.0f / 9.0f;
-		m_FOV = 60.0f;
-		m_FarPlane = 100.0f;
-		m_NearPlane = 0.1f;
-
 		m_Owner->GetTransform().SetPosition({ 0.0f, 2.0f, 10.0f });
-		m_Owner->GetTransform().SetRotation(glm::quat({0.0f, 0.0f, 0.0f}));
+		m_Owner->GetTransform().SetRotation(glm::vec3(0.0f));
 		m_Owner->GetTransform().SetScale({ 1.0f, 1.0f, 1.0f });
 
 		GetViewMatrix();

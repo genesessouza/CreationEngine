@@ -23,6 +23,7 @@ namespace Engine::Rendering
 		shader->sceneUniforms.HasDirLight = shader->GetUniformLocation("u_HasDirLight");
 		shader->sceneUniforms.DirLightDir = shader->GetUniformLocation("u_DirLightDir");
 		shader->sceneUniforms.DirLightColor = shader->GetUniformLocation("u_DirLightColor");
+		shader->sceneUniforms.DirLightIntensity = shader->GetUniformLocation("u_LightIntensity");
 
 		shader->sceneUniforms.PointLightCount = shader->GetUniformLocation("u_PointLightCount");
 
@@ -52,6 +53,7 @@ namespace Engine::Rendering
 			{
 				shader->DefineUniformVec3(shader->sceneUniforms.DirLightDir, s.DirLightDirection);
 				shader->DefineUniformVec4(shader->sceneUniforms.DirLightColor, s.DirLightColor);
+				shader->DefineUniformFloat(shader->sceneUniforms.DirLightIntensity, s.DirLightIntensity);
 			}
 
 			shader->DefineUniformInt(shader->sceneUniforms.PointLightCount, s.PointLightCount);
@@ -109,12 +111,13 @@ namespace Engine::Rendering
 			{
 				glm::vec3 dir = dirLight.GetDirection();
 				glm::vec4 color = dirLight.GetColor();
+				float intensity = dirLight.GetIntensity();
 
-				if (s_SceneData.DirLightDirection != dir ||
-					s_SceneData.DirLightColor != color)
+				if (s_SceneData.DirLightDirection != dir || s_SceneData.DirLightColor != color || s_SceneData.DirLightIntensity != intensity)
 				{
 					s_SceneData.DirLightDirection = dir;
 					s_SceneData.DirLightColor = color;
+					s_SceneData.DirLightIntensity = intensity;
 					lightsChanged = true;
 				}
 			}
@@ -126,7 +129,7 @@ namespace Engine::Rendering
 		}
 
 		// --- POINT LIGHTS ---
-		const auto& scenePointLights = scene.GetLights();
+		const auto& scenePointLights = scene.GetPointLights();
 		const uint32_t count = std::min<uint32_t>(scenePointLights.size(), SceneData::MaxPointLights);
 
 		if (s_SceneData.PointLightCount != count)
@@ -144,9 +147,7 @@ namespace Engine::Rendering
 			const glm::vec4 col = src->GetColor();
 			const float intensity = src->GetIntensity();
 
-			if (dst.Position != pos ||
-				dst.Color != col ||
-				dst.Intensity != intensity)
+			if (dst.Position != pos || dst.Color != col || dst.Intensity != intensity)
 			{
 				dst.Position = pos;
 				dst.Color = col;

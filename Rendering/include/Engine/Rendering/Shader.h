@@ -22,6 +22,7 @@ namespace Engine::Rendering
 		ViewProjection,
 		Normal,
 		Color,
+		Intensity,
 		Diffuse,
 		Specular,
 		Shininess
@@ -39,6 +40,7 @@ namespace Engine::Rendering
 			int HasDirLight;
 			int DirLightDir;
 			int DirLightColor;
+			int DirLightIntensity;
 
 			int PointLightCount;
 			int PointLightPos[8];
@@ -105,6 +107,9 @@ namespace Engine::Rendering
 					break;
 				case Color:
 					return "u_Color";
+					break;
+				case Intensity:
+					return "u_LightIntensity";
 					break;
 				case Diffuse:
 					return "u_DiffuseStrength";

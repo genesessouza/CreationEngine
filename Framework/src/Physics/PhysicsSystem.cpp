@@ -45,7 +45,7 @@ namespace Engine::Framework::Physics
 			if (collider)
 			{
 				auto& obb = collider->GetOBB();
-				glm::mat3 R = glm::toMat3(phys->GetOwner()->GetTransform().GetRotationQuat());
+				glm::mat3 R = glm::toMat3(phys->GetOwner()->GetTransform().GetOrientation());
 				obb.NormalizedAxes[0] = R[0];
 				obb.NormalizedAxes[1] = R[1];
 				obb.NormalizedAxes[2] = R[2];
@@ -82,10 +82,10 @@ namespace Engine::Framework::Physics
 			transform.SetPosition(transform.GetPosition() + phys->GetVelocity() * dt);
 
 			glm::vec3 w = phys->GetAngularVelocity();
-			glm::quat q = transform.GetRotationQuat();
+			glm::quat q = transform.GetOrientation();
 			glm::quat q_dot = 0.5f * glm::quat(0, w.x, w.y, w.z) * q;
 			glm::quat next_q = q + q_dot * dt;
-			transform.SetRotation(glm::normalize(next_q));
+			transform.SetRotation(glm::normalize(glm::degrees(glm::eulerAngles(next_q))));
 		}
 	}
 

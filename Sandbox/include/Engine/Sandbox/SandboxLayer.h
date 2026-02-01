@@ -48,14 +48,9 @@ namespace Engine::Sandbox
 
 			//CRTN_LOG_INFO("SandboxLayer update");
 
-			glm::vec3 currentPos = m_MainScene->GetSceneCamera()->GetOwner()->GetTransform().GetPosition();
-			glm::vec3 currentRot = m_MainScene->GetSceneCamera()->GetOwner()->GetTransform().GetRotation();
-
 			glm::vec3 deltaPos = m_CameraMovementDirection * deltaTime;
-			glm::vec3 deltaRot = m_CameraRotationDirection * deltaTime;
 
-			m_MainScene->GetSceneCamera()->GetOwner()->GetTransform().SetPosition(currentPos + deltaPos);
-			m_MainScene->GetSceneCamera()->GetOwner()->GetTransform().SetRotation(currentRot + deltaRot);
+			m_MainScene->GetSceneCamera()->GetOwner()->GetTransform().Translate(deltaPos);
 
 			m_MainScene->OnUpdateRuntime(deltaTime);
 			m_MainScene->OnRender();
@@ -87,16 +82,54 @@ namespace Engine::Sandbox
 				{
 					if (e.GetMouseButton() == GLFW_MOUSE_BUTTON_LEFT)
 					{
-						Engine::Framework::Raycast::RayResult result = Engine::Framework::Raycast::MouseToWorldPos(*m_MainScene->GetSceneCamera(), true);
-
-						if (result.Success)
+						if (Engine::Editor::GUI::GUIUtils::IsMouseInsideViewport())
 						{
-							m_SelectedEntity = result.HitEntity;
-							Engine::Editor::EditorGUI::Get().SelectEntity(m_SelectedEntity);
-						}
+							m_IsDragging = true;
+							m_LastMousePos = 
+								glm::vec2(Engine::Core::Application::Get().GetMousePosition().XPos, 
+								Engine::Core::Application::Get().GetMousePosition().YPos);
 
-						return false;
+							Engine::Framework::Raycast::RayResult result = Engine::Framework::Raycast::MouseToWorldPos(*m_MainScene->GetSceneCamera(), true);
+
+							if (result.Success)
+							{
+								m_SelectedEntity = result.HitEntity;
+								Engine::Editor::EditorGUI::Get().SelectEntity(m_SelectedEntity);
+							}
+						}
+						return true;
 					}
+				});
+
+			dispatcher.Dispatch<Engine::Core::Event::MouseReleasedEvent>([this](Engine::Core::Event::MouseReleasedEvent& e)
+				{
+					if (e.GetMouseButton() == GLFW_MOUSE_BUTTON_LEFT)
+						m_IsDragging = false;
+
+					return true;
+				});
+
+			dispatcher.Dispatch<Engine::Core::Event::MouseMovedEvent>([this](Engine::Core::Event::MouseMovedEvent& e)
+				{
+					if (!m_IsDragging) return false;
+
+					glm::vec2 currentMousePos = { e.GetX(), e.GetY() };
+					glm::vec2 delta = currentMousePos - m_LastMousePos;
+					m_LastMousePos = currentMousePos;
+
+					float yaw = -delta.x * m_Sensitivity;
+					float pitch = -delta.y * m_Sensitivity;
+
+					glm::quat qYaw = glm::angleAxis(yaw, glm::vec3(0, 1, 0));
+
+					glm::quat cameraOrientation = m_MainScene->GetSceneCamera()->GetOwner()->GetTransform().GetOrientation();
+					glm::vec3 right = cameraOrientation * glm::vec3(1, 0, 0);
+					glm::quat qPitch = glm::angleAxis(pitch, right);
+
+					m_MainScene->GetSceneCamera()->GetOwner()->GetTransform().SetRotation(glm::degrees(glm::eulerAngles(qPitch * qYaw * cameraOrientation)));
+					cameraOrientation = glm::normalize(cameraOrientation);
+
+					return true;
 				});
 
 			// KEY PRESSED
@@ -120,16 +153,6 @@ namespace Engine::Sandbox
 					if (e.GetKeyCode() == GLFW_KEY_SPACE) m_CameraMovementDirection.y = speed * m_CameraMovementSpeed;
 					if (e.GetKeyCode() == GLFW_KEY_LEFT_SHIFT) m_CameraMovementDirection.y = -speed * m_CameraMovementSpeed;
 
-					// ROTATION
-					if (e.GetKeyCode() == GLFW_KEY_UP) m_CameraRotationDirection.x = speed * m_CameraRotationSpeed;
-					if (e.GetKeyCode() == GLFW_KEY_DOWN) m_CameraRotationDirection.x = -speed * m_CameraRotationSpeed;
-
-					if (e.GetKeyCode() == GLFW_KEY_LEFT) m_CameraRotationDirection.y = speed * m_CameraRotationSpeed;
-					if (e.GetKeyCode() == GLFW_KEY_RIGHT) m_CameraRotationDirection.y = -speed * m_CameraRotationSpeed;
-
-					if (e.GetKeyCode() == GLFW_KEY_Q) m_CameraRotationDirection.z = speed * m_CameraRotationSpeed;
-					if (e.GetKeyCode() == GLFW_KEY_E) m_CameraRotationDirection.z = -speed * m_CameraRotationSpeed;
-
 					return false;
 				});
 
@@ -150,13 +173,18 @@ namespace Engine::Sandbox
 				});
 		}
 	private:
+		std::unique_ptr<Engine::Sandbox::MainScene> m_MainScene;
+		Engine::Framework::Entity* m_SelectedEntity = nullptr;
+	private:
+		// For camera rotation
 		float m_CameraMovementSpeed = 10.0f;
 		float m_CameraRotationSpeed = 90.0f;
 
 		glm::vec3 m_CameraMovementDirection;
 		glm::vec3 m_CameraRotationDirection;
-	private:
-		std::unique_ptr<Engine::Sandbox::MainScene> m_MainScene;
-		Engine::Framework::Entity* m_SelectedEntity = nullptr;
+
+		bool m_IsDragging = false;
+		glm::vec2 m_LastMousePos = { 0.0f, 0.0f };
+		float m_Sensitivity = 0.005f;
 	};
 }

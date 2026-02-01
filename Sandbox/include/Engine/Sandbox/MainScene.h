@@ -27,7 +27,7 @@ namespace Engine::Sandbox
 			/*{
 				auto redLightGO = Engine::Framework::GameObject::Create("[Point Light] Red Light");
 				redLightGO->GetTransform().SetPosition({ -3.0f, 1.0f, 0.0f });
-				redLightGO->GetTransform().SetRotation(glm::quat(glm::vec3(0.0f)));
+				redLightGO->GetTransform().SetOrientation(glm::quat(glm::vec3(0.0f)));
 
 				redLightGO->AddComponent<Engine::Rendering::MeshRenderer>();
 				
@@ -104,7 +104,7 @@ namespace Engine::Sandbox
 				m_DefaultCube->AddComponent<Engine::Framework::Physics::PhysicsComponent>();
 
 				m_DefaultCube->GetTransform().SetPosition({ 0.0f, 5.0f, 0.0f });
-				m_DefaultCube->GetTransform().SetRotation(glm::quat(glm::vec3(15.0f, 0.0f, 60.0f)));
+				m_DefaultCube->GetTransform().SetRotation({15.0f, 0.0f, 60.0f});
 				m_DefaultCube->GetTransform().SetScale({ 1.0f, 1.0f, 1.0f });
 
 				auto defaultCubeColl = m_DefaultCube->GetComponent<Engine::Framework::Physics::Collider>();

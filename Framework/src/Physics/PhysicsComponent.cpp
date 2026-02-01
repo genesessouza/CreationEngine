@@ -37,7 +37,7 @@ namespace Engine::Framework::Physics
 			return;
 		}
 
-		glm::quat q = GetOwner()->GetTransform().GetRotationQuat();
+		glm::quat q = GetOwner()->GetTransform().GetOrientation();
 
 		glm::mat3 R = glm::toMat3(q);
 		m_InvInertiaTensorWorld = R * m_InvInertiaTensorLocal * glm::transpose(R);

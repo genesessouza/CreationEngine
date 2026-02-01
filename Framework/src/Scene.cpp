@@ -57,9 +57,9 @@ namespace Engine::Framework
 	{
 		m_Renderables.push_back(renderable);
 	}
-	void Scene::AddLight(Lights::Light* light)
+	void Scene::AddPointLight(Lights::PointLight* pointLight)
 	{
-		m_Lights.push_back(light);
+		m_PointLights.push_back(pointLight);
 	}
 
 	void Scene::SetDirectionalLight(Lights::DirectionalLight* light)
@@ -80,9 +80,9 @@ namespace Engine::Framework
 	{
 		m_Renderables.erase(std::remove(m_Renderables.begin(), m_Renderables.end(), renderable), m_Renderables.end());
 	}
-	void Scene::RemoveLight(Lights::Light* light)
+	void Scene::RemovePointLight(Lights::PointLight* pointLight)
 	{
-		m_Lights.erase(std::remove(m_Lights.begin(), m_Lights.end(), light), m_Lights.end());
+		m_PointLights.erase(std::remove(m_PointLights.begin(), m_PointLights.end(), pointLight), m_PointLights.end());
 	}
 
 	void Scene::DeleteDirectionalLight(Lights::DirectionalLight* directionalLight)

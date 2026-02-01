@@ -9,7 +9,7 @@ namespace Engine::Core::Event::State
     struct MouseState
     {
         glm::vec2 Position{ 0.0f };
-        glm::vec2 Delta{ 0.0f };
+        glm::vec2 DeltaPos{ 0.0f };
 
         float ScrollDelta = 0.0f;
 

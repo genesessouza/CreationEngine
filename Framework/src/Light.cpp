@@ -37,11 +37,11 @@ namespace Engine::Framework::Lights
 
 	void PointLight::OnAddedToScene(Engine::Framework::Scene* scene)
 	{
-		scene->AddLight(this);
+		scene->AddPointLight(this);
 	}
 
 	void PointLight::OnRemovedFromScene(Engine::Framework::Scene* scene)
 	{
-		scene->RemoveLight(this);
+		scene->RemovePointLight(this);
 	}
 }

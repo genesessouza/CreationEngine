@@ -121,6 +121,11 @@ namespace Engine::Platform::Windows
 					Engine::Core::Event::MouseClickedEvent e(button);
 					win->m_EventCallback(e);
 				}
+				if (action == GLFW_RELEASE)
+				{
+					Engine::Core::Event::MouseReleasedEvent e(button);
+					win->m_EventCallback(e);
+				}
 			});
 
 		glfwSetCursorPosCallback(m_Window,

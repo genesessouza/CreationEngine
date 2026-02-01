@@ -187,7 +187,7 @@ namespace Engine::Core
 
 	bool Application::OnMouseMove(Event::MouseMovedEvent& e)
 	{
-		m_MouseState.Delta = { e.GetX() - m_MouseState.Position.x, e.GetY() - m_MouseState.Position.y };
+		m_MouseState.DeltaPos = { e.GetX() - m_MouseState.Position.x, e.GetY() - m_MouseState.Position.y };
 		m_MouseState.Position = { e.GetX(), e.GetY() };
 		m_MouseState.Moved = true;
 

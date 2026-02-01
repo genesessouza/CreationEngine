@@ -7,7 +7,7 @@ namespace Engine::Framework::Physics
 {
 	void Collider::OnUpdate()
 	{
-		glm::mat3 R = glm::mat3(m_Owner->GetTransform().GetRotationQuat());
+		glm::mat3 R = glm::mat3(m_Owner->GetTransform().GetOrientation());
 		m_OBB.NormalizedAxes[0] = R[0];
 		m_OBB.NormalizedAxes[1] = R[1];
 		m_OBB.NormalizedAxes[2] = R[2];
