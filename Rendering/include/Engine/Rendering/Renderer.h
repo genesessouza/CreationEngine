@@ -51,8 +51,8 @@ namespace Engine::Rendering
 			bool LightsDirty = true;
 		};
 	public:
-		static void InitSceneUniforms(const std::shared_ptr<Engine::Rendering::Shader>& shader);
-		static void UploadSceneUniforms(const std::shared_ptr<Engine::Rendering::Shader>& shader);
+		static void InitSceneUniforms(const std::shared_ptr<Shader>& shader);
+		static void UploadSceneUniforms(const std::shared_ptr<Shader>& shader);
 
 		static void MarkCameraDirty() { s_SceneData.CameraDirty = true; }
 		static void MarkLightsDirty() { s_SceneData.LightsDirty = true; }

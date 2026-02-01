@@ -65,7 +65,7 @@ namespace Engine::Editor
 			{
 				if (ImGui::MenuItem("Scene"))
 				{
-					//auto newScene = std::make_shared<Engine::Framework::Scene>();
+					//auto newScene = Engine::Framework::Scene::Create();
 					//newScene->Init();
 
 					//auto& currentScene = Engine::Framework::Scene::Get();
@@ -76,10 +76,14 @@ namespace Engine::Editor
 				{
 					if (ImGui::MenuItem("Point Light"))
 					{
-						//auto purpleLight = Engine::Framework::Lights::PointLight::Cre("[Point Light] New Light");
-						//purpleLight.GetTransform().SetPosition({ 0.0f, 1.0f, -3.0f });
-						//purpleLight.SetColor({ 1.0f, 1.0f, 1.0f, 1.0f });
-						//purpleLight.SetIntensity(10.0f);
+						auto newLightGo = Engine::Framework::GameObject::Create("[Point Light] New Light");
+						newLightGo->GetTransform().SetPosition({ 0.0f, 1.0f, -3.0f });
+
+						auto newLight = newLightGo->AddComponent<Engine::Framework::Lights::PointLight>();
+						newLight->SetIntensity(10.0f);
+						newLight->SetColor({ 1.0f, 1.0f, 1.0f, 1.0f }, newLight->GetIntensity());
+
+						Engine::Framework::Scene::Get().AddEntity(std::move(newLightGo));
 					}
 					ImGui::EndMenu();
 				}
@@ -89,18 +93,16 @@ namespace Engine::Editor
 					if (ImGui::MenuItem("3D Cube"))
 					{
 						auto newCube = Engine::Framework::GameObject::Create("[GameObject] New Cube");
-
-						newCube->AddComponent<Engine::Rendering::MeshRenderer>();
-						newCube->GetComponent<Engine::Rendering::MeshRenderer>()->SetMesh(Engine::Framework::MeshLibrary::InstantiateCube());
-						newCube->GetComponent<Engine::Rendering::MeshRenderer>()->GetMaterial()->SetColor(glm::vec4(0.2f, 0.2f, 0.2f, 1));
-
-						newCube->AddComponent<Engine::Framework::Physics::CubeCollider>(glm::vec3(1.0f));
-						newCube->AddComponent<Engine::Framework::Physics::PhysicsComponent>();
-
 						newCube->GetTransform().SetPosition({ 0.0f, 1.0f, 0.0f });
 						newCube->GetTransform().SetScale({ 1.0f, 1.0f, 1.0f });
-						
-						//newCube->Init();
+
+						auto newCubeRenderer = newCube->AddComponent<Engine::Rendering::MeshRenderer>();
+
+						newCubeRenderer->Init();
+						newCubeRenderer->SetMesh(Engine::Framework::MeshLibrary::InstantiateCube());
+						newCubeRenderer->GetMaterial()->SetColor(glm::vec4(0.2f, 0.2f, 0.2f, 1));
+
+						Engine::Framework::Scene::Get().AddEntity(std::move(newCube));
 					}
 					ImGui::EndMenu();
 				}
@@ -235,14 +237,8 @@ namespace Engine::Editor
 				transform.SetScale(scl);
 		}
 
-		if (auto light = dynamic_cast<Engine::Framework::Lights::PointLight*>(m_SelectedEntity))
-			DrawPointLightUI(light);
-		else if (auto dirLight = dynamic_cast<Engine::Framework::Lights::DirectionalLight*>(m_SelectedEntity))
-			DrawDirectionalLightUI(dirLight);
-		else if (auto gameObject = dynamic_cast<Engine::Framework::GameObject*>(m_SelectedEntity))
-			DrawGameObjectUI(gameObject);
-		else if (auto camera = dynamic_cast<Engine::Framework::Camera*>(m_SelectedEntity))
-			DrawCameraUI(camera);
+		auto gameObject = dynamic_cast<Engine::Framework::GameObject*>(m_SelectedEntity);
+		DrawGameObjectUI(gameObject);
 
 		ImGui::End();
 	}
@@ -286,173 +282,148 @@ namespace Engine::Editor
 		ImGui::End(); // End DockSpace
 	}
 
-	void EditorGUI::DrawPointLightUI(Engine::Framework::Lights::PointLight* light)
-	{
-		if (ImGui::CollapsingHeader("Point Light", ImGuiTreeNodeFlags_DefaultOpen))
-		{
-			glm::vec4 color = light->GetColor();
-			float intensity = light->GetIntensity();
-
-			if (ImGui::ColorEdit4("Color", glm::value_ptr(color)))
-				light->SetColor(color);
-
-			if (ImGui::DragFloat("Intensity", &intensity, 0.5f, 0.0f, 100.0f))
-				light->SetIntensity(intensity);
-		}
-	}
-
-	void EditorGUI::DrawDirectionalLightUI(Engine::Framework::Lights::DirectionalLight* light)
-	{
-		if (ImGui::CollapsingHeader("Directional Light", ImGuiTreeNodeFlags_DefaultOpen))
-		{
-			glm::vec3 dir = light->GetOwner()->GetTransform().GetRotation();
-			float intensity = light->GetIntensity();
-
-			if (ImGui::DragFloat3("Direction", glm::value_ptr(dir), 0.05f))
-				light->GetOwner()->GetTransform().SetRotation(dir);
-
-			if (ImGui::SliderFloat("Intensity", &intensity, 0.5f, 30.0f))
-				light->SetIntensity(intensity);
-		}
-	}
-
 	void EditorGUI::DrawGameObjectUI(Engine::Framework::GameObject* obj)
 	{
 		auto& meshRenderer = *obj->GetComponent<Engine::Rendering::MeshRenderer>();
-		if (!&meshRenderer) return;
 
-		if (ImGui::CollapsingHeader("Object Data", ImGuiTreeNodeFlags_DefaultOpen))
+		if (&meshRenderer)
 		{
-			if (ImGui::TreeNodeEx("Mesh Renderer", ImGuiTreeNodeFlags_DefaultOpen))
+			if (ImGui::CollapsingHeader("Rendering Data", ImGuiTreeNodeFlags_DefaultOpen))
 			{
-				auto& material = meshRenderer.GetMaterial();
-				auto& mesh = meshRenderer.GetMesh();
-
-				if (mesh && ImGui::TreeNodeEx("Mesh", ImGuiTreeNodeFlags_DefaultOpen))
+				if (ImGui::TreeNodeEx("Mesh Renderer", ImGuiTreeNodeFlags_DefaultOpen))
 				{
-					ImGui::Text("[Not yet] Mesh Type: ");
+					auto& material = meshRenderer.GetMaterial();
+					auto& mesh = meshRenderer.GetMesh();
+
+					if (mesh && ImGui::TreeNodeEx("Mesh", ImGuiTreeNodeFlags_DefaultOpen))
+					{
+						ImGui::Text("[Not yet] Mesh Type: ");
+						ImGui::TreePop();
+					}
+					if (material && ImGui::TreeNodeEx("Material", ImGuiTreeNodeFlags_DefaultOpen))
+					{
+						glm::vec4 color = material->GetColor();
+
+						float diff = material->GetDiffuse();
+						float spec = material->GetSpecular();
+						float shin = material->GetShininess();
+
+						if (ImGui::ColorEdit4("Albedo", glm::value_ptr(color)))
+							material->SetColor(color);
+
+						if (ImGui::SliderFloat("Diffuse", &diff, 0.0f, 1.0f))
+							material->SetDiffuse(diff);
+
+						if (ImGui::SliderFloat("Specular", &spec, 0.0f, 1.0f))
+							material->SetSpecular(spec);
+
+						if (ImGui::SliderFloat("Shininess", &shin, 8.0f, 128.0f))
+							material->SetShininess(shin);
+
+						ImGui::TreePop();
+					}
 					ImGui::TreePop();
 				}
-				if (material && ImGui::TreeNodeEx("Material", ImGuiTreeNodeFlags_DefaultOpen))
+			}
+		}
+
+		if (ImGui::CollapsingHeader("Components", ImGuiTreeNodeFlags_Framed))
+		{
+			auto phys = obj->GetComponent<Engine::Framework::Physics::PhysicsComponent>();
+			if (phys)
+			{
+				if (ImGui::TreeNodeEx("Physics", ImGuiTreeNodeFlags_DefaultOpen))
 				{
-					glm::vec4 color = material->GetColor();
+					bool isStatic = phys->IsStatic();
+					if (ImGui::Checkbox("Static", &isStatic))
+						phys->SetStatic(isStatic);
 
-					float diff = material->GetDiffuse();
-					float spec = material->GetSpecular();
-					float shin = material->GetShininess();
+					bool isEnabled = phys->IsEnabled();
+					if (ImGui::Checkbox("Enabled", &isEnabled))
+						phys->SetEnabled(isEnabled);
 
-					if (ImGui::ColorEdit4("Albedo", glm::value_ptr(color)))
-						material->SetColor(color);
+					glm::vec3 vel = phys->GetVelocity();
+					if (ImGui::DragFloat3("Velocity", &vel.x, 0.1f))
+						phys->SetVelocity(vel);
 
-					if (ImGui::SliderFloat("Diffuse", &diff, 0.0f, 1.0f))
-						material->SetDiffuse(diff);
+					glm::vec3 angVel = phys->GetAngularVelocity();
+					if (ImGui::DragFloat3("Angular Velocity", &angVel.x, 0.1f))
+						phys->SetAngularVelocity(angVel);
 
-					if (ImGui::SliderFloat("Specular", &spec, 0.0f, 1.0f))
-						material->SetSpecular(spec);
-
-					if (ImGui::SliderFloat("Shininess", &shin, 8.0f, 128.0f))
-						material->SetShininess(shin);
+					float mass = phys->GetMass();
+					if (ImGui::DragFloat("Mass", &mass, 0.1f, 0.01f, 1000.0f))
+						phys->SetMass(mass);
 
 					ImGui::TreePop();
 				}
-				ImGui::TreePop();
 			}
 
-			if (ImGui::TreeNodeEx("Components", ImGuiTreeNodeFlags_DefaultOpen))
+			auto col = obj->GetComponent<Engine::Framework::Physics::CubeCollider>();
+			if (col)
 			{
-				auto phys = obj->GetComponent<Engine::Framework::Physics::PhysicsComponent>();
-				if (phys)
+				if (ImGui::TreeNodeEx("Collider", ImGuiTreeNodeFlags_DefaultOpen))
 				{
-					if (ImGui::TreeNodeEx("Physics", ImGuiTreeNodeFlags_DefaultOpen))
-					{
-						bool isStatic = phys->IsStatic();
-						if (ImGui::Checkbox("Static", &isStatic))
-							phys->SetStatic(isStatic);
-
-						bool isEnabled = phys->IsEnabled();
-						if (ImGui::Checkbox("Enabled", &isEnabled))
-							phys->SetEnabled(isEnabled);
-
-						glm::vec3 vel = phys->GetVelocity();
-						if (ImGui::DragFloat3("Velocity", &vel.x, 0.1f))
-							phys->SetVelocity(vel);
-
-						glm::vec3 angVel = phys->GetAngularVelocity();
-						if (ImGui::DragFloat3("Angular Velocity", &angVel.x, 0.1f))
-							phys->SetAngularVelocity(angVel);
-
-						float mass = phys->GetMass();
-						if (ImGui::DragFloat("Mass", &mass, 0.1f, 0.01f, 1000.0f))
-							phys->SetMass(mass);
-
-						ImGui::TreePop();
-					}
-				}
-
-				auto col = obj->GetComponent<Engine::Framework::Physics::CubeCollider>();
-				if (col)
-				{
-					if (ImGui::TreeNodeEx("Collider", ImGuiTreeNodeFlags_DefaultOpen))
-					{
-						bool enabled = col->IsEnabled();
-						bool isTrigger = col->IsTrigger();
-
-						if (ImGui::Checkbox("Enabled", &enabled))
-							col->SetEnabled(enabled);
-
-						if (ImGui::Checkbox("Trigger", &isTrigger))
-							col->SetTrigger(isTrigger);
-
-						ImGui::TreePop();
-					}
-				}
-
-				/*auto dirLight = obj->GetComponent<Engine::Framework::Lights::DirectionalLight>();
-				if (ImGui::TreeNodeEx("Directional Light", ImGuiTreeNodeFlags_DefaultOpen))
-				{
-					bool enabled = dirLight->IsEnabled();
+					bool enabled = col->IsEnabled();
+					bool isTrigger = col->IsTrigger();
 
 					if (ImGui::Checkbox("Enabled", &enabled))
 						col->SetEnabled(enabled);
 
-					glm::vec3 dir = dirLight->GetOwner()->GetTransform().GetRotation();
-					float intensity = dirLight->GetIntensity();
-
-					glm::vec4 color = dirLight->GetColor();
-
-					if (ImGui::ColorEdit4("Color", glm::value_ptr(color)))
-						dirLight->SetColor(color, intensity);
-
-					if (ImGui::DragFloat3("Direction", glm::value_ptr(dir), 0.05f))
-						dirLight->SetDirection(dir);
-
-					if (ImGui::SliderFloat("Intensity", &intensity, 0.5f, 30.0f))
-						dirLight->SetIntensity(intensity);
+					if (ImGui::Checkbox("Trigger", &isTrigger))
+						col->SetTrigger(isTrigger);
 
 					ImGui::TreePop();
-				}*/
-
-				ImGui::TreePop();
+				}
 			}
-		}
-	}
 
-	void EditorGUI::DrawCameraUI(Engine::Framework::Camera* cam)
-	{
-		if (ImGui::CollapsingHeader("Parameters", ImGuiTreeNodeFlags_DefaultOpen))
-		{
-			auto camFov = cam->GetFOV();
-			auto camNear = cam->GetNear();
-			auto camFar = cam->GetFar();
+			auto light = obj->GetComponent<Engine::Framework::Lights::Light>();
+			if (light)
+			{
+				if (ImGui::TreeNodeEx("Light", ImGuiTreeNodeFlags_DefaultOpen))
+				{
+					bool enabled = light->IsEnabled();
 
-			if (ImGui::SliderFloat("Field of View", &camFov, 10.0f, 170.0f))
-				cam->SetFOV(camFov);
+					if (ImGui::Checkbox("Enabled", &enabled))
+						col->SetEnabled(enabled);
 
-			if (ImGui::SliderFloat("Near Plane", &camNear, 0.001f, 10.0f))
-				cam->SetNear(camNear);
+					glm::vec3 dir = light->GetDirection();
+					float intensity = light->GetIntensity();
 
-			if (ImGui::SliderFloat("Far Plane", &camFar, 30.0f, 1000.0f))
-				cam->SetFar(camFar);
+					glm::vec4 color = light->GetColor();
+
+					if (ImGui::ColorEdit4("Color", glm::value_ptr(color)))
+						light->SetColor(color, intensity);
+
+					if (ImGui::DragFloat3("Direction", glm::value_ptr(dir), 0.05f))
+						light->SetDirection(dir);
+
+					if (ImGui::SliderFloat("Intensity", &intensity, 0.5f, 30.0f))
+						light->SetIntensity(intensity);
+
+					ImGui::TreePop();
+				}
+			}
+			auto cam = obj->GetComponent<Engine::Framework::Camera>();
+			if (cam)
+			{
+				if (ImGui::TreeNodeEx("Camera", ImGuiTreeNodeFlags_DefaultOpen))
+				{
+					auto camFov = cam->GetFOV();
+					auto camNear = cam->GetNear();
+					auto camFar = cam->GetFar();
+
+					if (ImGui::SliderFloat("Field of View", &camFov, 10.0f, 170.0f))
+						cam->SetFOV(camFov);
+
+					if (ImGui::SliderFloat("Near Plane", &camNear, 0.001f, 10.0f))
+						cam->SetNear(camNear);
+
+					if (ImGui::SliderFloat("Far Plane", &camFar, 30.0f, 1000.0f))
+						cam->SetFar(camFar);
+				
+					ImGui::TreePop();
+				}
+			}
 		}
 	}
 

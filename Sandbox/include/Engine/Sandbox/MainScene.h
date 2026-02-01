@@ -82,24 +82,20 @@ namespace Engine::Sandbox
 				m_GroundCube->GetTransform().SetScale({ 10.0f, 0.3f, 10.0f });
 
 				auto groundCollider = m_GroundCube->GetComponent<Engine::Framework::Physics::Collider>();
-				groundCollider->SetOwner(m_GroundCube.get());
 				AddCollider(groundCollider);
 
 				auto groundRenderer = m_GroundCube->GetComponent<Engine::Rendering::MeshRenderer>();
-				groundRenderer->SetOwner(m_GroundCube.get());
 				groundRenderer->Init();
 				groundRenderer->SetMesh(Engine::Framework::MeshLibrary::InstantiateCube());
 				groundRenderer->GetMaterial()->SetColor(glm::vec4(0.2f, 0.2f, 0.2f, 1)); // Sets ground color to dark grey
 				AddRenderable(groundRenderer);
 
 				auto groundPhysics = m_GroundCube->GetComponent<Engine::Framework::Physics::PhysicsComponent>();
-				groundPhysics->SetOwner(m_GroundCube.get());
+				groundPhysics->SetMass(200.0f);
 				groundPhysics->SetStatic(true);
 				AddPhysicsComponent(groundPhysics);
 
 				AddEntity(std::move(m_GroundCube));
-
-				//m_GroundCube->Init();
 
 				// DEFAULT CUBE
 				m_DefaultCube = Engine::Framework::GameObject::Create("[GameObject] Default Cube");
@@ -112,19 +108,17 @@ namespace Engine::Sandbox
 				m_DefaultCube->GetTransform().SetScale({ 1.0f, 1.0f, 1.0f });
 
 				auto defaultCubeColl = m_DefaultCube->GetComponent<Engine::Framework::Physics::Collider>();
-				defaultCubeColl->SetOwner(m_DefaultCube.get());
 				AddCollider(defaultCubeColl);
 
 				auto defaultCubeRen = m_DefaultCube->GetComponent<Engine::Rendering::MeshRenderer>();
-				defaultCubeRen->SetOwner(m_DefaultCube.get());
 				defaultCubeRen->Init();
 				defaultCubeRen->SetMesh(Engine::Framework::MeshLibrary::InstantiateCube());
 				defaultCubeRen->GetMaterial()->SetColor(glm::vec4(0.2f, 0.2f, 0.2f, 1)); // Sets ground color to dark grey
 				AddRenderable(defaultCubeRen);
 
 				auto defaultCubePhysics = m_DefaultCube->GetComponent<Engine::Framework::Physics::PhysicsComponent>();
-				defaultCubePhysics->SetOwner(m_DefaultCube.get());
 				defaultCubePhysics->SetMass(1.0f);
+				defaultCubePhysics->SetStatic(true);
 				AddPhysicsComponent(defaultCubePhysics);
 
 				AddEntity(std::move(m_DefaultCube));

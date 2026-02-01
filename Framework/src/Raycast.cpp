@@ -3,6 +3,7 @@
 #include "Engine/Framework/Camera.h"
 #include "Engine/Framework/Debugging.h"
 #include "Engine/Framework/Scene.h"
+#include "Engine/Framework/GameObject.h"
 
 #include "Engine/Framework/Physics/Collider.h"
 
@@ -28,7 +29,7 @@ namespace Engine::Framework
 		rayView = glm::vec4(rayView.x, rayView.y, -1.0f, 0.0f);
 
 		glm::vec3 rayDir = glm::normalize(glm::vec3(glm::inverse(camera.GetViewMatrix()) * rayView));
-		glm::vec3 rayOrigin = camera.GetTransform().GetPosition();
+		glm::vec3 rayOrigin = camera.GetOwner()->GetTransform().GetPosition();
 
 		Scene& scene = Scene::Get();
 
@@ -39,17 +40,15 @@ namespace Engine::Framework
 			float dist = 0.0f;
 			bool hit = false;
 
-			//auto& gameObject = <Engine::Framework::GameObject>(entity);
-			//if (auto obj = dynamic_cast<GameObject*>(entity.get()))
-			//hit = Physics::Collider::IntersectsOBB(rayOrigin, rayDir, *gameObject, dist);
-			//else if (dynamic_cast<Lights::PointLight*>(entity.get()))
-				//hit = Physics::Collider::IntersectsSphere(rayOrigin, rayDir, *entity, 0.3f, dist);
+			auto gameObject = dynamic_cast<GameObject*>(entity.get());
+			if (gameObject)
+				hit = Physics::Collider::IntersectsOBB(rayOrigin, rayDir, *gameObject, dist);
 
-			//if (hit && dist < result.Distance) {
-			//    result.Success = true;
-			//    result.HitEntity = entity.get();
-			//    result.Distance = dist;
-			//}
+			if (hit && dist < result.Distance) {
+				result.Success = true;
+				result.HitEntity = entity.get();
+				result.Distance = dist;
+			}
 		}
 
 		if (result.Success)

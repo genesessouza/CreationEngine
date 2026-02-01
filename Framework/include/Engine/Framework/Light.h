@@ -9,60 +9,63 @@
 
 namespace Engine::Framework
 {
-    class Scene;
-    class GameObject;
+	class Scene;
+	class GameObject;
 }
 
 namespace Engine::Framework::Lights
 {
-    class DirectionalLight : public Engine::Framework::Component
-    {
-    public:
-        DirectionalLight();
-        virtual ~DirectionalLight() = default;
+	class Light : public Component
+	{
+	public:
+		Light() : m_Color(1.0f), m_Intensity(1.0f), m_Direction(1.0f) {}
+		virtual ~Light() = default;
 
-        virtual void Init() override;
+		virtual void Init() {}
 
-        glm::vec4 GetColor() const { return m_Color * m_Intensity; }
-        void SetColor(const glm::vec4& color, float intensity) { m_Color = color * intensity; }
+		glm::vec4 GetColor() const { return m_Color; }
+		void SetColor(const glm::vec4& color, float intensity) { m_Color = color * intensity; }
 
-        float GetIntensity() const { return m_Intensity; }
-        void SetIntensity(float intensity) { m_Intensity = intensity; }
+		float GetIntensity() const { return m_Intensity; }
+		void SetIntensity(float intensity) { m_Intensity = intensity; }
 
-        glm::vec3 GetDirection() const { return m_Direction; }
-        void SetDirection(const glm::vec3& dir) { m_Direction = dir; }
+		virtual glm::vec3 GetDirection() const { return m_Direction; }
+		virtual void SetDirection(const glm::vec3& dir) { m_Direction = dir; }
 
-        void OnAddedToScene(Engine::Framework::Scene* scene) override;
-        void OnRemovedFromScene(Engine::Framework::Scene* scene) override;
+		virtual void OnAddedToScene(Engine::Framework::Scene* scene) {}
+		virtual void OnRemovedFromScene(Engine::Framework::Scene* scene) {}
+	protected:
+		glm::vec4 m_Color;
+		float m_Intensity;
 
-        static std::unique_ptr<DirectionalLight> Create() { return std::make_unique<DirectionalLight>(); }
-    private:
-        glm::vec4 m_Color;
-        float m_Intensity;
+		glm::vec3 m_Direction;
+	};
 
-        glm::vec3 m_Direction;
-    };
+	class DirectionalLight : public Light
+	{
+	public:
+		DirectionalLight() = default;
+		virtual ~DirectionalLight() = default;
 
-    class PointLight : public Engine::Framework::Component
-    {
-    public:
-        PointLight();
-        virtual ~PointLight() = default;
+		void Init() override;
 
-        virtual void Init() override;
+		void OnAddedToScene(Engine::Framework::Scene* scene) override;
+		void OnRemovedFromScene(Engine::Framework::Scene* scene) override;
 
-        glm::vec4 GetColor() const { return m_Color; }
-        void SetColor(const glm::vec4& color) { m_Color = color; }
+		static std::unique_ptr<DirectionalLight> Create() { return std::make_unique<DirectionalLight>(); }
+	};
 
-        float GetIntensity() const { return m_Intensity; }
-        void SetIntensity(float intensity) { m_Intensity = intensity; }
+	class PointLight : public Light
+	{
+	public:
+		PointLight() = default;
+		virtual ~PointLight() = default;
 
-        void OnAddedToScene(Engine::Framework::Scene* scene) override;
-        void OnRemovedFromScene(Engine::Framework::Scene* scene) override;
+		void Init() override;
 
-        static std::unique_ptr<PointLight> Create() { return std::make_unique<PointLight>(); }
-    private:
-        glm::vec4 m_Color;
-        float m_Intensity;
-    };
+		void OnAddedToScene(Engine::Framework::Scene* scene) override;
+		void OnRemovedFromScene(Engine::Framework::Scene* scene) override;
+
+		static std::unique_ptr<PointLight> Create() { return std::make_unique<PointLight>(); }
+	};
 }

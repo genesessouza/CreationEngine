@@ -1,7 +1,6 @@
 #pragma once
 
 #include <glm/glm.hpp>
-
 #include <glm/gtc/quaternion.hpp>
 
 namespace Engine::Framework
@@ -9,7 +8,10 @@ namespace Engine::Framework
 	class Transform
 	{
     public:
-        Transform() = default;
+        Transform() 
+            : m_Position(0.0f), m_Scale(1.0f), m_Rotation(1.0f, 0.0f, 0.0f, 0.0f), m_WorldMatrix(glm::mat4(1.0f))
+        {
+        }
         virtual ~Transform() = default;
         
         const glm::mat4& GetWorldMatrix() const;

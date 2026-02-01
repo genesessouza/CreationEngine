@@ -48,12 +48,9 @@ namespace Engine::Editor
 		void DrawConsole();
 		void DrawObjectInfo();
 
-		void SelectEntity(const Engine::Framework::Entity& entity) const { *m_SelectedEntity = entity; }
+		void SelectEntity(Engine::Framework::Entity* entity) { m_SelectedEntity = entity; }
 
-		void DrawPointLightUI(Engine::Framework::Lights::PointLight* light);
-		void DrawDirectionalLightUI(Engine::Framework::Lights::DirectionalLight* light);
 		void DrawGameObjectUI(Engine::Framework::GameObject* obj);
-		void DrawCameraUI(Engine::Framework::Camera* obj);
 
 		static EditorGUI& Get();
 	private:

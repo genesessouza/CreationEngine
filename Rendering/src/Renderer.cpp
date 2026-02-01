@@ -13,7 +13,7 @@ namespace Engine::Rendering
 {
 	Renderer::SceneData Renderer::s_SceneData;
 
-	void Renderer::InitSceneUniforms(const std::shared_ptr<Engine::Rendering::Shader>& shader)
+	void Renderer::InitSceneUniforms(const std::shared_ptr<Shader>& shader)
 	{
 		shader->Bind();
 
@@ -34,7 +34,7 @@ namespace Engine::Rendering
 		}
 	}
 
-	void Renderer::UploadSceneUniforms(const std::shared_ptr<Engine::Rendering::Shader>& shader)
+	void Renderer::UploadSceneUniforms(const std::shared_ptr<Shader>& shader)
 	{
 		const auto& s = s_SceneData;
 
@@ -75,7 +75,7 @@ namespace Engine::Rendering
 	void Renderer::BeginScene(const Framework::Camera& camera, const Engine::Framework::Scene& scene)
 	{
 		// --- CAMERA ---
-		const glm::vec3 camPos = camera.GetTransform().GetPosition();
+		const glm::vec3 camPos = camera.GetOwner()->GetTransform().GetPosition();
 		const glm::mat4& vp = camera.GetViewProjectionMatrix();
 
 		if (s_SceneData.ViewPos != camPos)
@@ -84,7 +84,7 @@ namespace Engine::Rendering
 			s_SceneData.CameraDirty = true;
 		}
 
-		if (camera.GetTransform().WasModifiedThisFrame())
+		if (camera.GetOwner()->GetTransform().WasModifiedThisFrame())
 		{
 			s_SceneData.ViewProjection = vp;
 			s_SceneData.CameraDirty = true;
@@ -126,7 +126,7 @@ namespace Engine::Rendering
 		}
 
 		// --- POINT LIGHTS ---
-		const auto& scenePointLights = scene.GetPointLights();
+		const auto& scenePointLights = scene.GetLights();
 		const uint32_t count = std::min<uint32_t>(scenePointLights.size(), SceneData::MaxPointLights);
 
 		if (s_SceneData.PointLightCount != count)

@@ -13,18 +13,18 @@ namespace Engine::Framework
 
         virtual void Init() {}
 
-        virtual void OnUpdate() {}
-
         bool IsEnabled() const { return m_IsEnabled; }
         void SetEnabled(bool value) { m_IsEnabled = value; }
 
-        virtual void SetOwner(Engine::Framework::GameObject* owner) { m_Owner = owner; };
-        virtual Engine::Framework::GameObject* GetOwner() const { return m_Owner; };
+        virtual void SetOwner(GameObject* owner) { m_Owner = owner; }
+        virtual GameObject* GetOwner() const { return m_Owner; }
 
-        virtual void OnAddedToScene(Engine::Framework::Scene* scene) {};
-        virtual void OnRemovedFromScene(Engine::Framework::Scene* scene) {};
+        virtual void OnUpdate() {}
+
+        virtual void OnAddedToScene(Scene* scene) {};
+        virtual void OnRemovedFromScene(Scene* scene) {};
     protected:
-        Engine::Framework::GameObject* m_Owner = nullptr;
+        GameObject* m_Owner = nullptr;
 
         bool m_IsEnabled = true;
     };

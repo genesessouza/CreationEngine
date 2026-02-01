@@ -39,10 +39,10 @@ namespace Engine::Rendering
 
 		inline void Init()
 		{
-			m_Shader = Engine::Rendering::Shader::CreateDefaultShader(GetDefaultShaderPath().string());
+			m_Shader = Shader::CreateDefaultShader(GetDefaultShaderPath().string());
 			CRTN_CHECK_PTR(m_Shader);
 
-			Engine::Rendering::Renderer::InitSceneUniforms(m_Shader);
+			Renderer::InitSceneUniforms(m_Shader);
 			CacheUniforms();
 		}
 
@@ -92,7 +92,7 @@ namespace Engine::Rendering
 
 		int m_ColorLoc, m_DiffuseLoc, m_SpecularLoc, m_ShininessLoc;
 	private:
-		std::shared_ptr<Engine::Rendering::Shader> m_Shader;
+		std::shared_ptr<Shader> m_Shader;
 
 		glm::vec4 m_Color{ 1.0f };
 		float m_Diffuse = 0.5f;

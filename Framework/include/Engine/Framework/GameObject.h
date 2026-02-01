@@ -34,6 +34,8 @@ namespace Engine::Framework
         Engine::Framework::Transform& GetTransform() { return m_Transform; }
         const Engine::Framework::Transform& GetTransform() const { return m_Transform; }
 
+        bool HasExtraComponents() const { return m_Components.size() > 1; /* Mesh Renderer does not count*/ }
+
         template<typename T>
         T* GetComponent()
         {

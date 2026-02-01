@@ -73,14 +73,14 @@ namespace Engine::Framework
 		void AddCollider(Physics::Collider* collider);
 		void AddPhysicsComponent(Physics::PhysicsComponent* physicsComp);
 		void AddRenderable(Engine::Rendering::MeshRenderer* renderable);
-		void AddPointLight(Lights::PointLight* pointLight);
+		void AddLight(Lights::Light* light);
 		void SetDirectionalLight(Lights::DirectionalLight* directionalLight);
 
 		// REMOVERS USED BY COMPONENTS
 		void RemoveCollider(Physics::Collider* collider);
 		void RemovePhysicsComponent(Physics::PhysicsComponent* collider);
 		void RemoveRenderable(Engine::Rendering::MeshRenderer* renderable);
-		void RemovePointLight(Lights::PointLight* pointLight);
+		void RemoveLight(Lights::Light* light);
 		void DeleteDirectionalLight(Lights::DirectionalLight* directionalLight);
 
 		// GETTERS FOR OTHER CLASSES
@@ -88,7 +88,7 @@ namespace Engine::Framework
 		const std::vector<Physics::Collider*> GetColliders() const { return m_Colliders; }
 		const std::vector<Physics::PhysicsComponent*> GetPhysicsComponents() const { return m_PhysicsComponents; }
 		const std::vector<Engine::Rendering::MeshRenderer*> GetRenderables() const { return m_Renderables; }
-		const std::vector<Lights::PointLight*> GetPointLights() const { return m_PointLights; }
+		const std::vector<Lights::Light*> GetLights() const { return m_Lights; }
 
 		Lights::DirectionalLight* GetDirectionalLight() { return m_DirectionalLight; }
 		const Lights::DirectionalLight* GetDirectionalLight() const { return m_DirectionalLight; }
@@ -102,7 +102,7 @@ namespace Engine::Framework
 		std::vector<Physics::Collider*> m_Colliders;
 		std::vector<Physics::PhysicsComponent*> m_PhysicsComponents;
 		std::vector<Engine::Rendering::MeshRenderer*> m_Renderables;
-		std::vector<Lights::PointLight*> m_PointLights;
+		std::vector<Lights::Light*> m_Lights;
 
 		Lights::DirectionalLight* m_DirectionalLight;
 		Camera* m_SceneCamera;

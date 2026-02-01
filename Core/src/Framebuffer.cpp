@@ -2,6 +2,7 @@
 #include "Engine/Core/Log/Logger.h"
 
 #include "Engine/Platform/OpenGL/OpenGLFramebuffer.h"
+
 #include <Engine/Rendering/RendererAPI.h>
 
 namespace Engine::Core

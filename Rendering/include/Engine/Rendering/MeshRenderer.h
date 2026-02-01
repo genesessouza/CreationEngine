@@ -34,7 +34,7 @@ namespace Engine::Rendering
         {
             if (!m_MeshMat)
             {
-                m_MeshMat = Engine::Rendering::Material::Create();
+                m_MeshMat = Material::Create();
                 m_MeshMat->Init();
             }
         }
@@ -46,17 +46,17 @@ namespace Engine::Rendering
 
         void Draw(Engine::Framework::Transform& transform) const;
 
-        void SetMesh(const std::shared_ptr<Engine::Rendering::MeshGPU>& mesh)
+        void SetMesh(const std::shared_ptr<MeshGPU>& mesh)
         {
             m_Mesh = mesh;
         }
 
-        const std::shared_ptr<Engine::Rendering::MeshGPU>& GetMesh() const { return m_Mesh; }
+        const std::shared_ptr<MeshGPU>& GetMesh() const { return m_Mesh; }
 
-        const std::shared_ptr<Engine::Rendering::Material>& GetMaterial() const { return m_MeshMat; }
+        const std::shared_ptr<Material>& GetMaterial() const { return m_MeshMat; }
     private:
-        std::shared_ptr<Engine::Rendering::MeshGPU> m_Mesh;
-        std::shared_ptr<Engine::Rendering::Material> m_MeshMat;
+        std::shared_ptr<MeshGPU> m_Mesh;
+        std::shared_ptr<Material> m_MeshMat;
 
         MeshUniformLocations m_MeshUniforms;
         bool m_UniformsInitialized = false;

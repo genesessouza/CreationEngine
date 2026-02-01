@@ -5,13 +5,18 @@
 #include <memory>
 #include <vector>
 
+namespace Engine::Framework::Physics
+{
+	class Collider;
+}
+
 namespace Engine::Framework
 {
 	class Entity;
+	class GameObject;
 	class Camera;
 	class Scene;
 	class Debugging;
-	class Collider;
 
 	class Raycast
 	{

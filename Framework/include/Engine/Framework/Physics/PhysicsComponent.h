@@ -1,15 +1,22 @@
 #pragma once
 
 #include "Engine/Framework/Component.h"
-#include "Engine/Framework/GameObject.h"
-#include "Engine/Framework/Physics/Collider.h"
+#include "Engine/Framework/Physics/Gravity.h"
 
 #include <glm/glm.hpp>
 #define GLM_ENABLE_EXPERIMENTAL
 #include <glm/gtx/quaternion.hpp>
 
+#include <iostream>
+
+namespace Engine::Framework
+{
+	class GameObject;
+}
 namespace Engine::Framework::Physics
 {
+	class Collider;
+
 	class PhysicsComponent : public Engine::Framework::Component
 	{
 	public:
@@ -25,43 +32,11 @@ namespace Engine::Framework::Physics
 
 		void ApplyGravity(float ts)
 		{
-			m_Velocity.y += m_Gravity * ts;
+			m_Velocity.y += Gravity::GravityAcceleration().y * ts;
 		}
 
-		void CalculateInertiaTensor()
-		{
-			auto coll = m_Owner->GetComponent<Collider>();
-
-			if (IsStatic() || m_Mass == 0.0f)
-			{
-				m_InvInertiaTensorLocal = glm::mat3(0.0f);
-				m_InvInertiaTensorWorld = glm::mat3(0.0f);
-				return;
-			}
-
-			glm::vec3 halfSize = coll->GetHalfSize();
-
-			float x2 = (halfSize.x * 2.0f) * (halfSize.x * 2.0f);
-			float y2 = (halfSize.y * 2.0f) * (halfSize.y * 2.0f);
-			float z2 = (halfSize.z * 2.0f) * (halfSize.z * 2.0f);
-
-			float fraction = 1.0f / 12.0f;
-
-			glm::mat3 inertiaTensor(0.0f);
-			inertiaTensor[0][0] = fraction * m_Mass * (y2 + z2);
-			inertiaTensor[1][1] = fraction * m_Mass * (x2 + z2);
-			inertiaTensor[2][2] = fraction * m_Mass * (x2 + y2);
-
-			m_InvInertiaTensorLocal = glm::inverse(inertiaTensor);
-		}
-
-		void UpdateInertiaTensorWorld()
-		{
-			if (IsStatic()) return;
-
-			glm::mat3 R = glm::toMat3(GetOwner()->GetTransform().GetRotationQuat());
-			m_InvInertiaTensorWorld = R * m_InvInertiaTensorLocal * glm::transpose(R);
-		}
+		void CalculateInertiaTensor();
+		void UpdateInertiaTensorWorld();
 
 		glm::vec3 GetVelocity() const { return m_Velocity; }
 		void SetVelocity(const glm::vec3& v) { m_Velocity = v; }
@@ -73,7 +48,6 @@ namespace Engine::Framework::Physics
 		bool IsStatic() const { return m_IsStatic; }
 	private:
 		float m_Mass = 1.0f;
-		const float m_Gravity = -9.81f;
 
 		glm::mat3 m_InvInertiaTensorLocal = glm::mat3(0.0f);
 		glm::mat3 m_InvInertiaTensorWorld;

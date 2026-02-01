@@ -22,9 +22,9 @@ namespace Engine::Rendering
 			return m_MeshIBO->GetCount(); 
 		}
 	private:
-		std::shared_ptr<Engine::Rendering::Array::VertexArray> m_MeshVAO;
+		std::shared_ptr<Array::VertexArray> m_MeshVAO;
 
-		std::shared_ptr<Engine::Rendering::Buffer::VertexBuffer> m_MeshVBO;
-		std::shared_ptr<Engine::Rendering::Buffer::IndexBuffer> m_MeshIBO;
+		std::shared_ptr<Buffer::VertexBuffer> m_MeshVBO;
+		std::shared_ptr<Buffer::IndexBuffer> m_MeshIBO;
 	};
 }

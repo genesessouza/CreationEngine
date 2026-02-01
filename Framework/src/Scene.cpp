@@ -16,18 +16,16 @@ namespace Engine::Framework
 
 	void Scene::Init()
 	{
-		auto mainCam = Camera::Create("[3D Camera] Main");
-		m_SceneCamera = mainCam.get();
-		AddEntity(std::move(mainCam));
+		auto mainCamGO = GameObject::Create("[3D Camera] Main");
+		auto mainCam = mainCamGO->AddComponent<Camera>();
+		mainCam->Init();
+		m_SceneCamera = mainCam;
+		AddEntity(std::move(mainCamGO));
 
 		auto dirLightGO = GameObject::Create("[Directional Light] Sun");
-		dirLightGO->AddComponent<Lights::DirectionalLight>();
-
-		auto dirLightComp = dirLightGO->GetComponent<Lights::DirectionalLight>();
-		dirLightComp->SetOwner(dirLightGO.get());
-
-		dirLightComp->Init();
-		m_DirectionalLight = dirLightComp;
+		auto dirLight = dirLightGO->AddComponent<Lights::DirectionalLight>();
+		dirLight->Init();
+		m_DirectionalLight = dirLight;
 
 		SetDirectionalLight(m_DirectionalLight);
 		AddEntity(std::move(dirLightGO));
@@ -59,12 +57,12 @@ namespace Engine::Framework
 	{
 		m_Renderables.push_back(renderable);
 	}
-	void Scene::AddPointLight(Lights::PointLight* pointLight)
+	void Scene::AddLight(Lights::Light* light)
 	{
-		m_PointLights.push_back(pointLight);
+		m_Lights.push_back(light);
 	}
 
-	void Scene::SetDirectionalLight(Lights::DirectionalLight* directionalLight)
+	void Scene::SetDirectionalLight(Lights::DirectionalLight* light)
 	{
 		//m_DirectionalLight = directionalLight;
 	}
@@ -82,9 +80,9 @@ namespace Engine::Framework
 	{
 		m_Renderables.erase(std::remove(m_Renderables.begin(), m_Renderables.end(), renderable), m_Renderables.end());
 	}
-	void Scene::RemovePointLight(Lights::PointLight* pointLight)
+	void Scene::RemoveLight(Lights::Light* light)
 	{
-		m_PointLights.erase(std::remove(m_PointLights.begin(), m_PointLights.end(), pointLight), m_PointLights.end());
+		m_Lights.erase(std::remove(m_Lights.begin(), m_Lights.end(), light), m_Lights.end());
 	}
 
 	void Scene::DeleteDirectionalLight(Lights::DirectionalLight* directionalLight)
@@ -94,8 +92,8 @@ namespace Engine::Framework
 
 	void Scene::OnUpdateRuntime(float dt) const
 	{
-		for (auto& obj : m_Entities)
-			obj->OnUpdate();
+		//for (auto& obj : m_Entities)
+		//	obj->OnUpdate();
 
 		Physics::PhysicsSystem::UpdateCaches(*this);
 		Physics::PhysicsSystem::Step(dt);

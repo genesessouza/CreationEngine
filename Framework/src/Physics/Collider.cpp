@@ -7,11 +7,11 @@ namespace Engine::Framework::Physics
 {
 	void Collider::OnUpdate()
 	{
-		glm::mat4 modelMatrix = GetOwner()->GetTransform().GetWorldMatrix();
-		m_OBB.NormalizedAxes[0] = glm::normalize(glm::vec3(modelMatrix[0]));
-		m_OBB.NormalizedAxes[1] = glm::normalize(glm::vec3(modelMatrix[1]));
-		m_OBB.NormalizedAxes[2] = glm::normalize(glm::vec3(modelMatrix[2]));
-		m_OBB.Center = GetOwner()->GetTransform().GetPosition();
+		glm::mat3 R = glm::mat3(m_Owner->GetTransform().GetRotationQuat());
+		m_OBB.NormalizedAxes[0] = R[0];
+		m_OBB.NormalizedAxes[1] = R[1];
+		m_OBB.NormalizedAxes[2] = R[2];
+		m_OBB.Center = m_Owner->GetTransform().GetPosition();
 	
 		UpdateCacheIfNeeded();
 	}
@@ -135,38 +135,6 @@ namespace Engine::Framework::Physics
 	// ----------------------------------------------------------------------------------------------- //
 	// ----------------------------------------------------------------------------------------------- //
 
-	/*
-	bool CubeCollider::CheckCollision(Collider* other, glm::vec3& outOverlap, glm::vec3& outHitPoint)
-	{
-		bool collisionDetected = false;
-
-		if (auto otherCube = dynamic_cast<CubeCollider*>(other))
-		{
-			Transform& tA = m_Owner->GetTransform();
-			Transform& tB = otherCube->m_Owner->GetTransform();
-
-			glm::vec3 distanceVec = tB.GetPosition() - tA.GetPosition();
-
-			float overlapX = (tA.GetScale().x * 0.5f + tB.GetScale().x * 0.5f) - std::abs(distanceVec.x);
-			float overlapY = (tA.GetScale().y * 0.5f + tB.GetScale().y * 0.5f) - std::abs(distanceVec.y);
-			float overlapZ = (tA.GetScale().z * 0.5f + tB.GetScale().z * 0.5f) - std::abs(distanceVec.z);
-
-			if (overlapX > 0 && overlapY > 0 && overlapZ > 0)
-			{
-				if (overlapY < overlapX && overlapY < overlapZ)
-					outOverlap = glm::vec3(0, (distanceVec.y > 0 ? -overlapY : overlapY), 0);
-				else if (overlapX < overlapZ)
-					outOverlap = glm::vec3((distanceVec.x > 0 ? -overlapX : overlapX), 0, 0);
-				else
-					outOverlap = glm::vec3(0, 0, (distanceVec.z > 0 ? -overlapZ : overlapZ));
-
-				collisionDetected = true;
-			}
-		}
-		return collisionDetected;
-	}
-	*/
-
 	float CubeCollider::ProjectOBB(const OBB& obb, const glm::vec3& axis)
 	{
 		return 
@@ -269,15 +237,12 @@ namespace Engine::Framework::Physics
 			glm::dot(worldDirection, obb.NormalizedAxes[2])
 		);
 
-		// 2. No espaço local, o ponto extremo é fácil: é o sinal da direção * halfSize
 		glm::vec3 localContact(
 			(localDir.x > 0) ? obb.HalfSize.x : -obb.HalfSize.x,
 			(localDir.y > 0) ? obb.HalfSize.y : -obb.HalfSize.y,
 			(localDir.z > 0) ? obb.HalfSize.z : -obb.HalfSize.z
 		);
 
-		// 3. Transformar o ponto local de volta para o mundo
-		// worldPos = Centro + (eixoX * localX) + (eixoY * localY) + (eixoZ * localZ)
 		return obb.Center +
 			(obb.NormalizedAxes[0] * localContact.x) +
 			(obb.NormalizedAxes[1] * localContact.y) +

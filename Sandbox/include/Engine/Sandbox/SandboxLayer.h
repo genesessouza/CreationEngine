@@ -48,14 +48,14 @@ namespace Engine::Sandbox
 
 			//CRTN_LOG_INFO("SandboxLayer update");
 
-			glm::vec3 currentPos = m_MainScene->GetSceneCamera()->GetTransform().GetPosition();
-			glm::vec3 currentRot = m_MainScene->GetSceneCamera()->GetTransform().GetRotation();
+			glm::vec3 currentPos = m_MainScene->GetSceneCamera()->GetOwner()->GetTransform().GetPosition();
+			glm::vec3 currentRot = m_MainScene->GetSceneCamera()->GetOwner()->GetTransform().GetRotation();
 
 			glm::vec3 deltaPos = m_CameraMovementDirection * deltaTime;
 			glm::vec3 deltaRot = m_CameraRotationDirection * deltaTime;
 
-			m_MainScene->GetSceneCamera()->GetTransform().SetPosition(currentPos + deltaPos);
-			m_MainScene->GetSceneCamera()->GetTransform().SetRotation(currentRot + deltaRot);
+			m_MainScene->GetSceneCamera()->GetOwner()->GetTransform().SetPosition(currentPos + deltaPos);
+			m_MainScene->GetSceneCamera()->GetOwner()->GetTransform().SetRotation(currentRot + deltaRot);
 
 			m_MainScene->OnUpdateRuntime(deltaTime);
 			m_MainScene->OnRender();
@@ -92,7 +92,7 @@ namespace Engine::Sandbox
 						if (result.Success)
 						{
 							m_SelectedEntity = result.HitEntity;
-							Engine::Editor::EditorGUI::Get().SelectEntity(*m_SelectedEntity);
+							Engine::Editor::EditorGUI::Get().SelectEntity(m_SelectedEntity);
 						}
 
 						return false;

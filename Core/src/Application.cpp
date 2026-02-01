@@ -139,7 +139,7 @@ namespace Engine::Core
 			);
 
 			//RenderCommand::SetViewport(0, 0, m_Window->GetWindowSize().width, m_Window->GetWindowSize().height);
-			Engine::Core::RenderCommand::MarkFramebufferDirty();
+			RenderCommand::MarkFramebufferDirty();
 			m_FramebufferState.Resized = false;
 		}
 	}
@@ -188,9 +188,7 @@ namespace Engine::Core
 	bool Application::OnMouseMove(Event::MouseMovedEvent& e)
 	{
 		m_MouseState.Delta = { e.GetX() - m_MouseState.Position.x, e.GetY() - m_MouseState.Position.y };
-
 		m_MouseState.Position = { e.GetX(), e.GetY() };
-
 		m_MouseState.Moved = true;
 
 		return false;
@@ -199,7 +197,6 @@ namespace Engine::Core
 	bool Application::OnMouseScroll(Event::MouseScrolledEvent& e)
 	{
 		m_MouseState.ScrollDelta = e.GetYOffset();
-
 		m_MouseState.Scrolled = true;
 
 		return false;
@@ -212,8 +209,8 @@ namespace Engine::Core
 
 		m_FramebufferState.Width = e.GetWidth();
 		m_FramebufferState.Height = e.GetHeight();
-
 		m_FramebufferState.Resized = true;
+
 		return true;
 	}
 
@@ -221,7 +218,6 @@ namespace Engine::Core
 	{
 		m_WindowState.PosX = e.GetX();
 		m_WindowState.PosY = e.GetY();
-
 		m_WindowState.Moved = true;
 
 		return false;
@@ -234,7 +230,6 @@ namespace Engine::Core
 
 		m_WindowState.Width = e.GetWidth();
 		m_WindowState.Height = e.GetHeight();
-
 		m_WindowState.Resized = true;
 
 		return false;
