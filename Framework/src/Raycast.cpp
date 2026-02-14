@@ -2,8 +2,6 @@
 #include "Engine/Framework/Entity.h"
 #include "Engine/Framework/Camera.h"
 #include "Engine/Framework/Debugging.h"
-#include "Engine/Framework/Scene.h"
-#include "Engine/Framework/GameObject.h"
 
 #include "Engine/Framework/Physics/Collider.h"
 
@@ -38,9 +36,8 @@ namespace Engine::Framework
 			float dist = 0.0f;
 			bool hit = false;
 
-			auto gameObject = dynamic_cast<GameObject*>(entity.get());
-			if (gameObject)
-				hit = Physics::Collider::IntersectsOBB(rayOrigin, rayDir, *gameObject, dist);
+			if (entity)
+				hit = Physics::Collider::IntersectsOBB(rayOrigin, rayDir, *entity, dist);
 
 			if (hit && dist < result.Distance) {
 				result.Success = true;

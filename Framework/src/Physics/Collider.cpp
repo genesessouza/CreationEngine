@@ -1,13 +1,13 @@
 #include "Engine/Framework/Physics/Collider.h"
 
-#include "Engine/Framework/GameObject.h"
+#include "Engine/Framework/Entity.h"
 #include "Engine/Framework/Scene.h"
 
 namespace Engine::Framework::Physics
 {
 	void Collider::OnUpdate()
 	{
-		glm::mat3 R = glm::mat3(m_Owner->GetTransform().GetOrientation());
+		glm::mat3 R = glm::mat3(GetOwner()->GetTransform().GetOrientation());
 		m_OBB.NormalizedAxes[0] = R[0];
 		m_OBB.NormalizedAxes[1] = R[1];
 		m_OBB.NormalizedAxes[2] = R[2];
@@ -32,7 +32,7 @@ namespace Engine::Framework::Physics
 	}
 
 	// RAYCASTING
-	bool Collider::IntersectsOBB(const glm::vec3& rayOrigin, const glm::vec3& rayDir, Engine::Framework::GameObject& entity, float& outDist)
+	bool Collider::IntersectsOBB(const glm::vec3& rayOrigin, const glm::vec3& rayDir, Engine::Framework::Entity& entity, float& outDist)
 	{
 		glm::mat4 modelMatrix = entity.GetTransform().GetWorldMatrix();
 		glm::mat4 invModel = glm::inverse(modelMatrix);
@@ -71,7 +71,7 @@ namespace Engine::Framework::Physics
 		return true;
 	}
 
-	bool Collider::IntersectsSphere(const glm::vec3& rayOrigin, const glm::vec3& rayDir, Engine::Framework::GameObject& entity, float radius, float& outDist)
+	bool Collider::IntersectsSphere(const glm::vec3& rayOrigin, const glm::vec3& rayDir, Engine::Framework::Entity& entity, float radius, float& outDist)
 	{
 		glm::vec3 oc = rayOrigin - entity.GetTransform().GetPosition();
 
@@ -145,20 +145,10 @@ namespace Engine::Framework::Physics
 
 	bool CubeCollider::SimpleSAT(const OBB& a, const OBB& b)
 	{
-		glm::vec3 axes[15] =
+		glm::vec3 axes[6] =
 		{
 			a.NormalizedAxes[0], a.NormalizedAxes[1], a.NormalizedAxes[2],
-			b.NormalizedAxes[0], b.NormalizedAxes[1], b.NormalizedAxes[2],
-
-			glm::cross(a.NormalizedAxes[0], b.NormalizedAxes[0]),
-			glm::cross(a.NormalizedAxes[0], b.NormalizedAxes[1]),
-			glm::cross(a.NormalizedAxes[0], b.NormalizedAxes[2]),
-			glm::cross(a.NormalizedAxes[1], b.NormalizedAxes[0]),
-			glm::cross(a.NormalizedAxes[1], b.NormalizedAxes[1]),
-			glm::cross(a.NormalizedAxes[1], b.NormalizedAxes[2]),
-			glm::cross(a.NormalizedAxes[2], b.NormalizedAxes[0]),
-			glm::cross(a.NormalizedAxes[2], b.NormalizedAxes[1]),
-			glm::cross(a.NormalizedAxes[2], b.NormalizedAxes[2])
+			b.NormalizedAxes[0], b.NormalizedAxes[1], b.NormalizedAxes[2]
 		};
 
 		glm::vec3 delta = b.Center - a.Center;
@@ -191,7 +181,17 @@ namespace Engine::Framework::Physics
 		glm::vec3 axes[15] =
 		{
 			a.NormalizedAxes[0], a.NormalizedAxes[1], a.NormalizedAxes[2],
-			b.NormalizedAxes[0], b.NormalizedAxes[1], b.NormalizedAxes[2]
+			b.NormalizedAxes[0], b.NormalizedAxes[1], b.NormalizedAxes[2],
+
+			glm::cross(a.NormalizedAxes[0], b.NormalizedAxes[0]),
+			glm::cross(a.NormalizedAxes[0], b.NormalizedAxes[1]),
+			glm::cross(a.NormalizedAxes[0], b.NormalizedAxes[2]),
+			glm::cross(a.NormalizedAxes[1], b.NormalizedAxes[0]),
+			glm::cross(a.NormalizedAxes[1], b.NormalizedAxes[1]),
+			glm::cross(a.NormalizedAxes[1], b.NormalizedAxes[2]),
+			glm::cross(a.NormalizedAxes[2], b.NormalizedAxes[0]),
+			glm::cross(a.NormalizedAxes[2], b.NormalizedAxes[1]),
+			glm::cross(a.NormalizedAxes[2], b.NormalizedAxes[2])
 		};
 
 		for (int i = 0; i < 15; i++)

@@ -23,12 +23,22 @@ namespace Engine::Framework
 			return cubeMesh;
 		}
 
+		static MeshGPURef InstantiateSphere()
+		{
+			static MeshGPURef sphereMesh = CreateSphere();
+			return sphereMesh;
+		}
+
 		static Engine::Framework::Geometry::Mesh GetCPUMeshQuad() {
 			return Geometry::Mesh::CreateQuad();
 		}
 
 		static Engine::Framework::Geometry::Mesh GetCPUMeshCube() {
 			return Geometry::Mesh::CreateCube();
+		}
+
+		static Engine::Framework::Geometry::Mesh GetCPUMeshSphere() {
+			return Geometry::Mesh::CreateSphere();
 		}
 
 	private:
@@ -41,6 +51,12 @@ namespace Engine::Framework
 		static MeshGPURef CreateCube()
 		{
 			Engine::Framework::Geometry::Mesh cpuMesh = Geometry::Mesh::CreateCube();
+			return std::make_shared<Engine::Rendering::MeshGPU>(cpuMesh);
+		}
+
+		static MeshGPURef CreateSphere()
+		{
+			Engine::Framework::Geometry::Mesh cpuMesh = Geometry::Mesh::CreateSphere();
 			return std::make_shared<Engine::Rendering::MeshGPU>(cpuMesh);
 		}
 	};

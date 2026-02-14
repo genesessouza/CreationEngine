@@ -13,7 +13,6 @@ namespace Engine::Framework::Physics
 namespace Engine::Framework
 {
 	class Entity;
-	class GameObject;
 	class Camera;
 	class Scene;
 	class Debugging;

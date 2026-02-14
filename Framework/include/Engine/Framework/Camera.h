@@ -10,7 +10,7 @@
 
 namespace Engine::Framework
 {
-	class GameObject;
+	class Entity;
 	class Transform;
 
 	class Camera : public Component

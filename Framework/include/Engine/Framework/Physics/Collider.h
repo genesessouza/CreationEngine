@@ -6,8 +6,8 @@
 
 namespace Engine::Framework
 {
+	class Entity;
 	class Scene;
-	class GameObject;
 }
 
 namespace Engine::Framework::Physics
@@ -41,7 +41,7 @@ namespace Engine::Framework::Physics
 		};
 	public:
 		Collider()
-			: Component(), m_AABB{}, m_OBB{}, m_HalfSize(0.0f)
+			: Component(), m_AABB{}, m_OBB{}, m_HalfSize(0.0f), m_ColliderType()
 		{
 		}
 
@@ -73,8 +73,8 @@ namespace Engine::Framework::Physics
 		virtual void OnRemovedFromScene(Engine::Framework::Scene* scene) override;
 
 		// FOR RAYCASTING
-		static bool IntersectsOBB(const glm::vec3& rayOrigin, const glm::vec3& rayDir, Engine::Framework::GameObject& entity, float& outDist);
-		static bool IntersectsSphere(const glm::vec3& rayOrigin, const glm::vec3& rayDir, Engine::Framework::GameObject& entity, float radius, float& outDist);
+		static bool IntersectsOBB(const glm::vec3& rayOrigin, const glm::vec3& rayDir, Engine::Framework::Entity& entity, float& outDist);
+		static bool IntersectsSphere(const glm::vec3& rayOrigin, const glm::vec3& rayDir, Engine::Framework::Entity& entity, float radius, float& outDist);
 
 		inline virtual glm::vec3 GetHalfSize() const { return m_HalfSize; }
 
@@ -115,9 +115,10 @@ namespace Engine::Framework::Physics
 	{
 	public:
 		SphereCollider(float radius = 0.5f)
-			: Collider(), m_Radius(radius)
+			: Collider()
 		{
 			m_ColliderType = ColliderType::Sphere;
+			m_Radius = radius;
 		}
 
 		virtual ~SphereCollider() = default;
@@ -136,7 +137,7 @@ namespace Engine::Framework::Physics
 	class CubeCollider : public Collider
 	{
 	public:
-		CubeCollider(const glm::vec3& size)
+		CubeCollider(const glm::vec3& size = glm::vec3(1.0f))
 			: Collider(), m_Size(size)
 		{
 			m_ColliderType = ColliderType::Cube;

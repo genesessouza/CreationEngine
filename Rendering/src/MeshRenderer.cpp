@@ -5,7 +5,7 @@
 
 #include <Engine/Framework/Transform.h>
 #include <Engine/Framework/Scene.h>
-#include <Engine/Framework/GameObject.h>
+#include <Engine/Framework/Entity.h>
 
 #include <Engine/Core/Log/Logger.h>
 
@@ -27,12 +27,12 @@ namespace Engine::Rendering
 
     void MeshRenderer::OnAddedToScene(Engine::Framework::Scene* scene)
     {
-        scene->AddRenderable(this);
+        scene->AddRenderer(this);
     }
 
     void MeshRenderer::OnRemovedFromScene(Engine::Framework::Scene* scene)
     {
-        scene->RemoveRenderable(this);
+        scene->RemoveRenderer(this);
     }
 
 	void MeshRenderer::Draw(Engine::Framework::Transform& transform) const

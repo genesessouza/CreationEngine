@@ -25,103 +25,60 @@ namespace Engine::Sandbox
 
 			// POINT LIGHTS 
 			/*{
-				auto redLightGO = Engine::Framework::GameObject::Create("[Point Light] Red Light");
-				redLightGO->GetTransform().SetPosition({ -3.0f, 1.0f, 0.0f });
-				redLightGO->GetTransform().SetOrientation(glm::quat(glm::vec3(0.0f)));
+				auto redLightGo = Engine::Framework::Entity::CreateEmpty("[Entity] Red Light");
+				redLightGo->GetTransform().SetPosition({ 0.0f, 1.0f, -3.0f });
 
-				redLightGO->AddComponent<Engine::Rendering::MeshRenderer>();
-				
-				auto redLightRenderer = redLightGO->GetComponent<Engine::Rendering::MeshRenderer>();
-				redLightRenderer->Init();
-				redLightRenderer->GetMaterial()->SetColor({ 1.0f, 0.0f, 0.0f, 1.0f });
+				auto redLight = redLightGo->AddComponent<Engine::Framework::Lights::PointLight>();
+				redLight->SetIntensity(10.0f);
+				redLight->SetColor({ 1.0f, 0.0f, 0.0f, 1.0f });
 
-				AddEntity(std::move(redLightGO));
-				AddRenderable(redLightRenderer);
+				AddPointLight(redLight);
+				AddEntity(std::move(redLightGo));
 
-				auto greenLight = Engine::Framework::Lights::PointLight::Create("[Point Light] Green Light");
-				//greenLight->SetEnabled(false);
-				greenLight->GetTransform().SetPosition({ 0.0f, 3.0f, 0.0f });
-				greenLight->SetColor({ 0.0f, 1.0f, 0.0f, 1.0f });
+				auto greenLightGo = Engine::Framework::Entity::CreateEmpty("[Entity] Green Light");
+				greenLightGo->GetTransform().SetPosition({ -3.0f, 1.0f, 0.0f });
+
+				auto greenLight = greenLightGo->AddComponent<Engine::Framework::Lights::PointLight>();
 				greenLight->SetIntensity(10.0f);
+				greenLight->SetColor({ 0.0f, 1.0f, 0.0f, 1.0f });
 
-				AddPointLight(greenLight.get());
+				AddPointLight(greenLight);
+				AddEntity(std::move(greenLightGo));
 
-				auto blueLight = Engine::Framework::Lights::PointLight::Create("[Point Light] Blue Light");
-				//blueLight->SetEnabled(false);
-				blueLight->GetTransform().SetPosition({ 3.0f, 1.0f, 0.0f });
-				blueLight->SetColor({ 0.0f, 0.0f, 1.0f, 1.0f });
+				auto blueLightGo = Engine::Framework::Entity::CreateEmpty("[Entity] Blue Light");
+				blueLightGo->GetTransform().SetPosition({ 3.0f, 1.0f, 0.0f });
+
+				auto blueLight = blueLightGo->AddComponent<Engine::Framework::Lights::PointLight>();
 				blueLight->SetIntensity(10.0f);
+				blueLight->SetColor({ 0.0f, 0.0f, 1.0f, 1.0f });
 
-				AddPointLight(blueLight.get());
-
-				auto purpleLight = Engine::Framework::Lights::PointLight::Create("[Point Light] Purple Light");
-				//purpleLight->SetEnabled(false);
-				purpleLight->GetTransform().SetPosition({ 0.0f, 1.0f, -3.0f });
-				purpleLight->SetColor({ 0.5f, 0.0f, 0.5f, 1.0f });
-				purpleLight->SetIntensity(10.0f);
-
-				AddPointLight(purpleLight.get());
-
-				auto cyanLight = Engine::Framework::Lights::PointLight::Create("[Point Light] Cyan Light");
-				//cyanLight->SetEnabled(false);
-				cyanLight->GetTransform().SetPosition({ 0.0f, 1.0f, 3.0f });
-				cyanLight->SetColor({ 0.0f, 0.5f, 0.5f, 1.0f });
-				cyanLight->SetIntensity(10.0f);
-
-				AddPointLight(cyanLight.get());
+				AddPointLight(blueLight);
+				AddEntity(std::move(blueLightGo));
 			}*/
 
 			// SCENE OBJECTS
 			{
 				// GROUND
-				m_GroundCube = Engine::Framework::GameObject::Create("[GameObject] Ground Cube");
-				m_GroundCube->AddComponent<Engine::Framework::Physics::CubeCollider>(glm::vec3(1.0f));
-				m_GroundCube->AddComponent<Engine::Rendering::MeshRenderer>();
-				m_GroundCube->AddComponent<Engine::Framework::Physics::PhysicsComponent>();
-				m_GroundCube->GetTransform().SetPosition({ 0.0f, 0.0f, 0.0f });
+				m_GroundCube = Engine::Framework::Entity::CreateWithCollider("[Entity] Ground Cube", Engine::Framework::MeshLibrary::InstantiateCube());
 				m_GroundCube->GetTransform().SetScale({ 10.0f, 0.3f, 10.0f });
-
-				auto groundCollider = m_GroundCube->GetComponent<Engine::Framework::Physics::Collider>();
-				AddCollider(groundCollider);
-
-				auto groundRenderer = m_GroundCube->GetComponent<Engine::Rendering::MeshRenderer>();
-				groundRenderer->Init();
-				groundRenderer->SetMesh(Engine::Framework::MeshLibrary::InstantiateCube());
-				groundRenderer->GetMaterial()->SetColor(glm::vec4(0.2f, 0.2f, 0.2f, 1)); // Sets ground color to dark grey
-				AddRenderable(groundRenderer);
-
-				auto groundPhysics = m_GroundCube->GetComponent<Engine::Framework::Physics::PhysicsComponent>();
-				groundPhysics->SetMass(200.0f);
-				groundPhysics->SetStatic(true);
-				AddPhysicsComponent(groundPhysics);
+				m_GroundCube->GetComponent<Engine::Rendering::MeshRenderer>()->GetMaterial()->SetColor(glm::vec4(0.0f, 0.05f, 1.0f, 1.0f)); // Sets ground color to blue
 
 				AddEntity(std::move(m_GroundCube));
 
 				// DEFAULT CUBE
-				m_DefaultCube = Engine::Framework::GameObject::Create("[GameObject] Default Cube");
-				m_DefaultCube->AddComponent<Engine::Framework::Physics::CubeCollider>(glm::vec3(1.0f));
-				m_DefaultCube->AddComponent<Engine::Rendering::MeshRenderer>();
-				m_DefaultCube->AddComponent<Engine::Framework::Physics::PhysicsComponent>();
-
-				m_DefaultCube->GetTransform().SetPosition({ 0.0f, 5.0f, 0.0f });
-				m_DefaultCube->GetTransform().SetRotation({15.0f, 0.0f, 60.0f});
-				m_DefaultCube->GetTransform().SetScale({ 1.0f, 1.0f, 1.0f });
-
-				auto defaultCubeColl = m_DefaultCube->GetComponent<Engine::Framework::Physics::Collider>();
-				AddCollider(defaultCubeColl);
-
-				auto defaultCubeRen = m_DefaultCube->GetComponent<Engine::Rendering::MeshRenderer>();
-				defaultCubeRen->Init();
-				defaultCubeRen->SetMesh(Engine::Framework::MeshLibrary::InstantiateCube());
-				defaultCubeRen->GetMaterial()->SetColor(glm::vec4(0.2f, 0.2f, 0.2f, 1)); // Sets ground color to dark grey
-				AddRenderable(defaultCubeRen);
-
-				auto defaultCubePhysics = m_DefaultCube->GetComponent<Engine::Framework::Physics::PhysicsComponent>();
-				defaultCubePhysics->SetMass(1.0f);
-				//defaultCubePhysics->SetStatic(true);
-				AddPhysicsComponent(defaultCubePhysics);
+				m_DefaultCube = Engine::Framework::Entity::CreateWithPhysics("[Entity] Default Cube", Engine::Framework::MeshLibrary::InstantiateCube());
+				m_DefaultCube->GetTransform().SetPosition({ 3.0f, 3.0f, 0.0f });
+				m_DefaultCube->GetTransform().SetRotation({ 15.0f, 0.0f, 60.0f });
+				m_DefaultCube->GetComponent<Engine::Rendering::MeshRenderer>()->GetMaterial()->SetColor(glm::vec4(0.9f, 0.05f, 0.05f, 1.0f)); // Sets color to red
 
 				AddEntity(std::move(m_DefaultCube));
+
+				// SPHERE
+				m_DefaultSphere = Engine::Framework::Entity::CreateWithPhysics("[Entity] Default Sphere", Engine::Framework::MeshLibrary::InstantiateSphere());
+				m_DefaultSphere->GetTransform().SetPosition({ -3.0f, 3.0f, 0.0f });
+				m_DefaultSphere->GetComponent<Engine::Rendering::MeshRenderer>()->GetMaterial()->SetColor(glm::vec4(0.05f, 0.9f, 0.05f, 1.0f)); // Sets color to green
+
+				AddEntity(std::move(m_DefaultSphere));
 			}
 		}
 
@@ -132,7 +89,8 @@ namespace Engine::Sandbox
 			return nullptr;
 		}
 	private:
-		std::unique_ptr<Engine::Framework::GameObject> m_GroundCube;
-		std::unique_ptr<Engine::Framework::GameObject> m_DefaultCube;
+		std::unique_ptr<Engine::Framework::Entity> m_GroundCube;
+		std::unique_ptr<Engine::Framework::Entity> m_DefaultCube;
+		std::unique_ptr<Engine::Framework::Entity> m_DefaultSphere;
 	};
 }

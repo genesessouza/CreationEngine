@@ -78,16 +78,16 @@ namespace Engine::Sandbox
 
 			dispatcher.Dispatch<Engine::Core::Event::MouseClickedEvent>([this](Engine::Core::Event::MouseClickedEvent& e)
 				{
-					if (e.GetMouseButton() == GLFW_MOUSE_BUTTON_LEFT)
+					if (Engine::Editor::GUI::GUIUtils::IsMouseInsideViewport())
 					{
-						if (Engine::Editor::GUI::GUIUtils::IsMouseInsideViewport())
+						if (e.GetMouseButton() == GLFW_MOUSE_BUTTON_LEFT)
 						{
-							if (ImGuizmo::IsOver())
-								return true;
-
-							auto& app = Engine::Core::Application::Get();
-							m_LastMousePos = glm::vec2(app.GetMousePosition().XPos, app.GetMousePosition().YPos);
-							m_IsDragging = true;
+							if (!ImGuizmo::IsOver())
+							{
+								auto& app = Engine::Core::Application::Get();
+								m_LastMousePos = glm::vec2(app.GetMousePosition().XPos, app.GetMousePosition().YPos);
+								m_IsDragging = true;
+							}
 
 							Engine::Framework::Raycast::RayResult result = Engine::Framework::Raycast::MouseToWorldPos(*m_MainScene->GetSceneCamera(), false);
 							if (result.Success)
@@ -101,8 +101,8 @@ namespace Engine::Sandbox
 								Engine::Editor::EditorGUI::Get().SelectEntity(m_SelectedEntity);
 							}
 						}
-						return true;
 					}
+					return true;
 				});
 
 			dispatcher.Dispatch<Engine::Core::Event::MouseReleasedEvent>([this](Engine::Core::Event::MouseReleasedEvent& e)

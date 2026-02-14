@@ -113,6 +113,14 @@
     <ClCompile Include="src\RendererAPI.cpp" />
     <ClCompile Include="src\Shader.cpp" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="Assets\Shaders\Billboard.shader" />
+    <None Include="Assets\Shaders\Debug.shader" />
+    <None Include="Assets\Shaders\Default-Lit.shader">
+      <FileType>Document</FileType>
+    </None>
+    <None Include="Assets\Shaders\Dummy.shader" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

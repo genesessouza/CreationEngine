@@ -12,7 +12,7 @@ namespace Engine::Framework
 {
 	class Scene;
 	class Camera;
-	class GameObject;
+	class Entity;
 
 	namespace Physics
 	{
@@ -51,7 +51,7 @@ namespace Engine::Editor
 		void SelectEntity(Engine::Framework::Entity* entity) { m_SelectedEntity = entity; }
 		Engine::Framework::Entity* GetSelectedEntity() const { return m_SelectedEntity; }
 
-		void DrawGameObjectUI(Engine::Framework::GameObject* obj);
+		void DrawEntityUI(Engine::Framework::Entity* obj);
 
 		static EditorGUI& Get();
 	private:

@@ -16,13 +16,13 @@ namespace Engine::Framework
 
 	void Scene::Init()
 	{
-		auto mainCamGO = GameObject::Create("[3D Camera] Main");
+		auto mainCamGO = Entity::CreateEmpty("[Entity] Main Camera");
 		auto mainCam = mainCamGO->AddComponent<Camera>();
 		mainCam->Init();
 		m_SceneCamera = mainCam;
 		AddEntity(std::move(mainCamGO));
 
-		auto dirLightGO = GameObject::Create("[Directional Light] Sun");
+		auto dirLightGO = Entity::CreateEmpty("[Entity] Directional Light");
 		auto dirLight = dirLightGO->AddComponent<Lights::DirectionalLight>();
 		dirLight->Init();
 		m_DirectionalLight = dirLight;
@@ -31,18 +31,49 @@ namespace Engine::Framework
 		AddEntity(std::move(dirLightGO));
 	}
 
-	void Scene::AddEntity(std::unique_ptr<Engine::Framework::Entity> obj)
+	void Scene::AddEntity(std::unique_ptr<Entity> entity)
 	{
-		m_Entities.push_back(std::move(obj));
+		for (auto* renderable : entity->GetComponents<Engine::Rendering::MeshRenderer>())
+		{
+			AddRenderer(renderable);
+			CRTN_LOG_TRACE("Entity: %s - added renderer", renderable->GetOwner()->GetName().c_str());
+		}
+
+		for (auto* collider : entity->GetComponents<Physics::Collider>())
+		{
+			AddCollider(collider);
+			CRTN_LOG_TRACE("Entity: %s - added collider", collider->GetOwner()->GetName().c_str());
+		}
+
+		for (auto* physics : entity->GetComponents<Physics::PhysicsComponent>())
+		{
+			AddPhysicsComponent(physics);
+			CRTN_LOG_TRACE("Entity: %s - added physics", physics->GetOwner()->GetName().c_str());
+		}
+
+		m_Entities.push_back(std::move(entity));
 	}
 
-	void Scene::RemoveEntity(Entity* obj)
+	void Scene::RemoveEntity(Entity* entity)
 	{
+		for (auto* renderable : entity->GetComponents<Engine::Rendering::MeshRenderer>())
+			RemoveRenderer(renderable);
+
+		for (auto* collider : entity->GetComponents<Physics::Collider>())
+			RemoveCollider(collider);
+
+		for (auto* physics : entity->GetComponents<Physics::PhysicsComponent>())
+			RemovePhysicsComponent(physics);
+
 		m_Entities.erase(
 			std::remove_if(m_Entities.begin(), m_Entities.end(),
-				[obj](const std::unique_ptr<Entity>& e) { return e.get() == obj; }),
+				[entity](const std::unique_ptr<Entity>& e) { return e.get() == entity; }),
 			m_Entities.end()
 		);
+	}
+	void Scene::AddRenderer(Engine::Rendering::MeshRenderer* renderer)
+	{
+		m_Renderers.push_back(renderer);
 	}
 
 	void Scene::AddCollider(Physics::Collider* collider)
@@ -52,10 +83,6 @@ namespace Engine::Framework
 	void Scene::AddPhysicsComponent(Physics::PhysicsComponent* physicsComp)
 	{
 		m_PhysicsComponents.push_back(physicsComp);
-	}
-	void Scene::AddRenderable(Engine::Rendering::MeshRenderer* renderable)
-	{
-		m_Renderables.push_back(renderable);
 	}
 	void Scene::AddPointLight(Lights::PointLight* pointLight)
 	{
@@ -76,9 +103,9 @@ namespace Engine::Framework
 	{
 		m_PhysicsComponents.erase(std::remove(m_PhysicsComponents.begin(), m_PhysicsComponents.end(), physicsComp), m_PhysicsComponents.end());
 	}
-	void Scene::RemoveRenderable(Engine::Rendering::MeshRenderer* renderable)
+	void Scene::RemoveRenderer(Engine::Rendering::MeshRenderer* renderer)
 	{
-		m_Renderables.erase(std::remove(m_Renderables.begin(), m_Renderables.end(), renderable), m_Renderables.end());
+		m_Renderers.erase(std::remove(m_Renderers.begin(), m_Renderers.end(), renderer), m_Renderers.end());
 	}
 	void Scene::RemovePointLight(Lights::PointLight* pointLight)
 	{
@@ -106,9 +133,11 @@ namespace Engine::Framework
 	{
 		Engine::Rendering::Renderer::BeginScene(*m_SceneCamera, *this);
 
-		for (auto& renderer : m_Renderables)
+		for (auto& renderer : m_Renderers)
 		{
 			auto& transform = renderer->GetOwner()->GetTransform();
+
+			if (!renderer->IsEnabled() || !renderer->GetOwner()->IsEnabled()) continue;
 			renderer->Draw(transform);
 		}
 

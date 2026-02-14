@@ -1,7 +1,7 @@
 #include "Engine/Framework/Light.h"
 
 #include "Engine/Framework/Scene.h"
-#include "Engine/Framework/GameObject.h"
+#include "Engine/Framework/Entity.h"
 
 namespace Engine::Framework::Lights
 {

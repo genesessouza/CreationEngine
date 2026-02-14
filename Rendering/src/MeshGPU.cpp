@@ -11,14 +11,15 @@ namespace Engine::Rendering
 		CRTN_LOG_DEBUG("[MESH GPU]: Constructing geometry data...\n");
 
 		m_MeshVAO = Array::VertexArray::Create();
-		m_MeshVBO = Buffer::VertexBuffer::Create(mesh.vertices.data(), mesh.vertices.size() * sizeof(Engine::Framework::Geometry::Vertex));
-		m_MeshIBO = Buffer::IndexBuffer::Create(mesh.indices.data(), mesh.indices.size() * sizeof(uint32_t));
+		m_MeshVBO = Buffer::VertexBuffer::Create(mesh.GetVertices().data(), mesh.GetVertices().size() * sizeof(Engine::Framework::Geometry::Vertex));
+		m_MeshIBO = Buffer::IndexBuffer::Create(mesh.GetIndices().data(), mesh.GetIndices().size() * sizeof(uint32_t));
 
 		m_MeshVAO->AddVertexBuffer(m_MeshVBO, Engine::Framework::Geometry::Vertex::GetLayout());
 		m_MeshVAO->SetIndexBuffer(m_MeshIBO);
 
 		m_MeshVAO->Unbind();
 
+		m_MeshCPU = mesh;
 		CRTN_LOG_DEBUG("[MESH GPU]: Done\n");
 	}
 

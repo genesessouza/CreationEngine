@@ -9,8 +9,8 @@
 
 namespace Engine::Framework
 {
+	class Entity;
 	class Scene;
-	class GameObject;
 }
 
 namespace Engine::Framework::Lights

@@ -1,6 +1,6 @@
 #include "Engine/Framework/Camera.h"
 
-#include "Engine/Framework/GameObject.h"
+#include "Engine/Framework/Entity.h"
 #include "Engine/Framework/Transform.h"
 
 #include <Engine/Core/Log/Logger.h>

@@ -11,7 +11,7 @@
 
 namespace Engine::Framework
 {
-	class GameObject;
+	class Entity;
 }
 namespace Engine::Framework::Physics
 {
