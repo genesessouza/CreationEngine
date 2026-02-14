@@ -59,5 +59,11 @@ namespace Engine::Framework
 			Geometry::Mesh cpuMesh = Geometry::Mesh::CreateSphere();
 			return std::make_shared<Engine::Rendering::MeshGPU>(cpuMesh);
 		}
+
+		static MeshGPURef CreateSphere()
+		{
+			Engine::Framework::Geometry::Mesh cpuMesh = Geometry::Mesh::CreateSphere();
+			return std::make_shared<Engine::Rendering::MeshGPU>(cpuMesh);
+		}
 	};
 }
