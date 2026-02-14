@@ -2,7 +2,7 @@
 
 #include "Engine/Rendering/Shader.h"
 #include "Engine/Rendering/Renderer.h"
-#include "Engine/Framework/GameObject.h"
+#include "Engine/Framework/Entity.h"
 
 #include <glm/ext/vector_float3.hpp>
 
@@ -24,7 +24,7 @@ namespace Engine::Rendering
 {
 	inline static std::filesystem::path GetDefaultShaderPath()
 	{
-		return GetExecutableDir() / "Shaders/Default-Lit.cshader";
+		return GetExecutableDir() / "Shaders/Default-Lit.shader";
 	}
 
 	class Material
@@ -74,9 +74,9 @@ namespace Engine::Rendering
 			return m_Shader;
 		}
 
-		static std::shared_ptr<Engine::Rendering::Material> Create()
+		static std::shared_ptr<Material> Create()
 		{
-			auto mat = std::make_shared<Engine::Rendering::Material>();
+			auto mat = std::make_shared<Material>();
 			CRTN_CHECK_PTR(mat);
 
 			return mat;

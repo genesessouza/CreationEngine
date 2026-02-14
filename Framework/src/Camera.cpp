@@ -1,6 +1,6 @@
 #include "Engine/Framework/Camera.h"
 
-#include "Engine/Framework/GameObject.h"
+#include "Engine/Framework/Entity.h"
 #include "Engine/Framework/Transform.h"
 
 #include <Engine/Core/Log/Logger.h>
@@ -17,11 +17,11 @@ namespace Engine::Framework
 		GetProjectionMatrix();
 	}
 
-	void Camera::OnAddedToScene(Engine::Framework::Scene* scene)
+	void Camera::OnAddedToScene(Scene* scene)
 	{
 	}
 
-	void Camera::OnRemovedFromScene(Engine::Framework::Scene* scene)
+	void Camera::OnRemovedFromScene(Scene* scene)
 	{
 	}
 

@@ -31,13 +31,13 @@ namespace Engine::Editor::GUI
 
     glm::vec2 GUIUtils::GetViewportMin() 
     {
-        auto bounds = Engine::Editor::EditorGUI::Get().GetViewportBounds();
+        auto bounds = EditorGUI::Get().GetViewportBounds();
         return { bounds[0].x, bounds[0].y };
     }
 
     glm::vec2 GUIUtils::GetViewportSize() 
     {
-        auto bounds = Engine::Editor::EditorGUI::Get().GetViewportBounds();
+        auto bounds = EditorGUI::Get().GetViewportBounds();
         return { bounds[1].x - bounds[0].x, bounds[1].y - bounds[0].y };
     }
 }

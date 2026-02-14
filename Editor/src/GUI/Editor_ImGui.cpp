@@ -4,7 +4,7 @@
 
 #include <Engine/Framework/Camera.h>
 #include <Engine/Framework/Scene.h>
-#include <Engine/Framework/GameObject.h>
+#include <Engine/Framework/Entity.h>
 #include <Engine/Framework/Light.h>
 #include <Engine/Framework/MeshLibrary.h>
 
@@ -80,7 +80,7 @@ namespace Engine::Editor
 				{
 					if (ImGui::MenuItem("Point Light"))
 					{
-						auto newLightGo = Engine::Framework::GameObject::Create("[Point Light] New Light");
+						auto newLightGo = Engine::Framework::Entity::CreateEmpty("[Point Light] New Light");
 						newLightGo->GetTransform().SetPosition({ 0.0f, 1.0f, -3.0f });
 
 						auto newLight = newLightGo->AddComponent<Engine::Framework::Lights::PointLight>();
@@ -97,15 +97,10 @@ namespace Engine::Editor
 				{
 					if (ImGui::MenuItem("3D Cube"))
 					{
-						auto newCube = Engine::Framework::GameObject::Create("[GameObject] New Cube");
+						auto newCube = Engine::Framework::Entity::CreateEmpty("[Entity] New Cube");
 						newCube->GetTransform().SetPosition({ 0.0f, 1.0f, 0.0f });
 						newCube->GetTransform().SetScale({ 1.0f, 1.0f, 1.0f });
-
-						auto newCubeRenderer = newCube->AddComponent<Engine::Rendering::MeshRenderer>();
-
-						newCubeRenderer->Init();
-						newCubeRenderer->SetMesh(Engine::Framework::MeshLibrary::InstantiateCube());
-						newCubeRenderer->GetMaterial()->SetColor(glm::vec4(0.2f, 0.2f, 0.2f, 1));
+						newCube->GetComponent<Engine::Rendering::MeshRenderer>()->GetMaterial()->SetColor(glm::vec4(0.2f, 0.2f, 0.2f, 1));
 
 						Engine::Framework::Scene::Get().AddEntity(std::move(newCube));
 					}
@@ -217,13 +212,13 @@ namespace Engine::Editor
 				glm::vec3 skew;
 				glm::vec4 persp;
 
-				glm::decompose(modelMatrix, scl, q, pos, skew, persp);
-				rot = glm::eulerAngles(q);
-
 				auto& t = m_SelectedEntity->GetTransform();
 				t.SetPosition(pos);
 				t.SetRotation(glm::degrees(rot));
 				t.SetScale(scl);
+
+				glm::decompose(modelMatrix, scl, q, pos, skew, persp);
+				rot = glm::eulerAngles(q);
 			}
 		}
 
@@ -291,8 +286,7 @@ namespace Engine::Editor
 				transform.SetScale(scl);
 		}
 
-		auto gameObject = dynamic_cast<Engine::Framework::GameObject*>(m_SelectedEntity);
-		DrawGameObjectUI(gameObject);
+		DrawEntityUI(m_SelectedEntity);
 
 		ImGui::End();
 	}
@@ -336,7 +330,7 @@ namespace Engine::Editor
 		ImGui::End(); // End DockSpace
 	}
 
-	void EditorGUI::DrawGameObjectUI(Engine::Framework::GameObject* obj)
+	void EditorGUI::DrawEntityUI(Engine::Framework::Entity* obj)
 	{
 		auto& meshRenderer = *obj->GetComponent<Engine::Rendering::MeshRenderer>();
 
@@ -381,7 +375,7 @@ namespace Engine::Editor
 			}
 		}
 
-		if (ImGui::CollapsingHeader("Components", ImGuiTreeNodeFlags_Framed))
+		if (ImGui::CollapsingHeader("Components", ImGuiTreeNodeFlags_DefaultOpen))
 		{
 			auto phys = obj->GetComponent<Engine::Framework::Physics::PhysicsComponent>();
 			if (phys)
@@ -449,7 +443,10 @@ namespace Engine::Editor
 						light->SetColor(color);
 
 					if (ImGui::DragFloat3("Direction", glm::value_ptr(dir), 0.05f))
+					{
 						light->SetDirection(dir);
+						light->GetOwner()->GetTransform().SetRotation(dir);
+					}
 
 					if (ImGui::SliderFloat("Intensity", &intensity, 0.5f, 30.0f))
 						light->SetIntensity(intensity);

@@ -144,7 +144,6 @@
     <ClInclude Include="include\Engine\Framework\Physics\Collider.h" />
     <ClInclude Include="include\Engine\Framework\Debugging.h" />
     <ClInclude Include="include\Engine\Framework\Entity.h" />
-    <ClInclude Include="include\Engine\Framework\GameObject.h" />
     <ClInclude Include="include\Engine\Framework\Light.h" />
     <ClInclude Include="include\Engine\Framework\Mesh.h" />
     <ClInclude Include="include\Engine\Framework\MeshLibrary.h" />
@@ -156,6 +155,7 @@
     <ClInclude Include="include\Engine\Framework\Transform.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\Entity.cpp" />
     <ClCompile Include="src\Light.cpp" />
     <ClCompile Include="src\Physics\Collider.cpp" />
     <ClCompile Include="src\Debugging.cpp" />

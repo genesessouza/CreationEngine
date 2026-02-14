@@ -78,4 +78,10 @@
       <Filter>Arquivos de Origem</Filter>
     </ClCompile>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="Assets\Shaders\Billboard.shader" />
+    <None Include="Assets\Shaders\Debug.shader" />
+    <None Include="Assets\Shaders\Dummy.shader" />
+    <None Include="Assets\Shaders\Default-Lit.shader" />
+  </ItemGroup>
 </Project>

@@ -21,7 +21,11 @@ namespace Engine::Rendering
 			CRTN_CHECK_PTR(m_MeshIBO);
 			return m_MeshIBO->GetCount(); 
 		}
+
+		const Engine::Framework::Geometry::Mesh& GetMeshCPU() const { return m_MeshCPU; }
 	private:
+		Engine::Framework::Geometry::Mesh m_MeshCPU;
+
 		std::shared_ptr<Array::VertexArray> m_MeshVAO;
 
 		std::shared_ptr<Buffer::VertexBuffer> m_MeshVBO;

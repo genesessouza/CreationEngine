@@ -68,7 +68,7 @@
       <AdditionalDependencies>Core.lib; Platform.lib; Rendering.lib; Framework.lib; glfw3.lib; opengl32.lib; $(CoreLibraryDependencies);%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PreBuildEvent>
-      <Command>xcopy "$(SolutionDir)_Assets\Shaders" "$(TargetDir)Shaders\" /E /I /Y</Command>
+      <Command>xcopy /y /s /i "$(SolutionDir)Rendering\Assets\Shaders\*" "$(TargetDir)Shaders\"</Command>
     </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -90,7 +90,7 @@
       <AdditionalDependencies>Core.lib; Platform.lib; Rendering.lib; Framework.lib; glfw3.lib; opengl32.lib; $(CoreLibraryDependencies);%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PreBuildEvent>
-      <Command>xcopy "$(SolutionDir)_Assets\Shaders" "$(TargetDir)Shaders\" /E /I /Y</Command>
+      <Command>xcopy /y /s /i "$(SolutionDir)Rendering\Assets\Shaders\*" "$(TargetDir)Shaders\"</Command>
     </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>

@@ -23,24 +23,40 @@ namespace Engine::Framework
 			return cubeMesh;
 		}
 
-		static Engine::Framework::Geometry::Mesh GetCPUMeshQuad() {
+		static MeshGPURef InstantiateSphere()
+		{
+			static MeshGPURef sphereMesh = CreateSphere();
+			return sphereMesh;
+		}
+
+		static Geometry::Mesh GetCPUMeshQuad() {
 			return Geometry::Mesh::CreateQuad();
 		}
 
-		static Engine::Framework::Geometry::Mesh GetCPUMeshCube() {
+		static Geometry::Mesh GetCPUMeshCube() {
 			return Geometry::Mesh::CreateCube();
+		}
+
+		static Geometry::Mesh GetCPUMeshSphere() {
+			return Geometry::Mesh::CreateSphere();
 		}
 
 	private:
 		static MeshGPURef CreateQuad()
 		{
-			Engine::Framework::Geometry::Mesh cpuMesh = Geometry::Mesh::CreateQuad();
+			Geometry::Mesh cpuMesh = Geometry::Mesh::CreateQuad();
 			return std::make_shared<Engine::Rendering::MeshGPU>(cpuMesh);
 		}
 
 		static MeshGPURef CreateCube()
 		{
-			Engine::Framework::Geometry::Mesh cpuMesh = Geometry::Mesh::CreateCube();
+			Geometry::Mesh cpuMesh = Geometry::Mesh::CreateCube();
+			return std::make_shared<Engine::Rendering::MeshGPU>(cpuMesh);
+		}
+
+		static MeshGPURef CreateSphere()
+		{
+			Geometry::Mesh cpuMesh = Geometry::Mesh::CreateSphere();
 			return std::make_shared<Engine::Rendering::MeshGPU>(cpuMesh);
 		}
 	};

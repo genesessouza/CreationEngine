@@ -9,8 +9,8 @@
 
 namespace Engine::Framework
 {
+	class Entity;
 	class Scene;
-	class GameObject;
 }
 
 namespace Engine::Framework::Lights
@@ -32,8 +32,8 @@ namespace Engine::Framework::Lights
 		virtual glm::vec3 GetDirection() const { return m_Direction; }
 		virtual void SetDirection(const glm::vec3& dir) { m_Direction = dir; }
 
-		virtual void OnAddedToScene(Engine::Framework::Scene* scene) {}
-		virtual void OnRemovedFromScene(Engine::Framework::Scene* scene) {}
+		virtual void OnAddedToScene(Scene* scene) {}
+		virtual void OnRemovedFromScene(Scene* scene) {}
 	protected:
 		glm::vec4 m_Color;
 		float m_Intensity;
@@ -49,8 +49,8 @@ namespace Engine::Framework::Lights
 
 		void Init() override;
 
-		void OnAddedToScene(Engine::Framework::Scene* scene) override;
-		void OnRemovedFromScene(Engine::Framework::Scene* scene) override;
+		void OnAddedToScene(Scene* scene) override;
+		void OnRemovedFromScene(Scene* scene) override;
 
 		static std::unique_ptr<DirectionalLight> Create() { return std::make_unique<DirectionalLight>(); }
 	};
@@ -63,8 +63,8 @@ namespace Engine::Framework::Lights
 
 		void Init() override;
 
-		void OnAddedToScene(Engine::Framework::Scene* scene) override;
-		void OnRemovedFromScene(Engine::Framework::Scene* scene) override;
+		void OnAddedToScene(Scene* scene) override;
+		void OnRemovedFromScene(Scene* scene) override;
 
 		static std::unique_ptr<PointLight> Create() { return std::make_unique<PointLight>(); }
 	};

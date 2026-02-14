@@ -1,7 +1,7 @@
 #include "Engine/Framework/Light.h"
 
 #include "Engine/Framework/Scene.h"
-#include "Engine/Framework/GameObject.h"
+#include "Engine/Framework/Entity.h"
 
 namespace Engine::Framework::Lights
 {
@@ -15,13 +15,13 @@ namespace Engine::Framework::Lights
 		GetOwner()->GetTransform().SetScale(glm::vec3(1.0f));
 	}
 
-	void DirectionalLight::OnAddedToScene(Engine::Framework::Scene* scene)
+	void DirectionalLight::OnAddedToScene(Scene* scene)
 	{
 		//scene->AddLight(this);
 		scene->SetDirectionalLight(this);
 	}
 
-	void DirectionalLight::OnRemovedFromScene(Engine::Framework::Scene* scene)
+	void DirectionalLight::OnRemovedFromScene(Scene* scene)
 	{
 		scene->DeleteDirectionalLight(this);
 	}
@@ -35,12 +35,12 @@ namespace Engine::Framework::Lights
 		GetOwner()->GetTransform().SetScale(glm::vec3(1.0f));
 	}
 
-	void PointLight::OnAddedToScene(Engine::Framework::Scene* scene)
+	void PointLight::OnAddedToScene(Scene* scene)
 	{
 		scene->AddPointLight(this);
 	}
 
-	void PointLight::OnRemovedFromScene(Engine::Framework::Scene* scene)
+	void PointLight::OnRemovedFromScene(Scene* scene)
 	{
 		scene->RemovePointLight(this);
 	}

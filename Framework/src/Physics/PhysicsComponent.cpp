@@ -1,6 +1,6 @@
 #include "Engine/Framework/Physics/PhysicsComponent.h"
 
-#include "Engine/Framework/GameObject.h"
+#include "Engine/Framework/Entity.h"
 #include "Engine/Framework/Physics/Collider.h"
 
 namespace Engine::Framework::Physics

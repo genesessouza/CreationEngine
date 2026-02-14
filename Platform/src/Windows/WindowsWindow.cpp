@@ -54,7 +54,7 @@ namespace Engine::Platform::Windows
 
 		CRTN_LOG_TRACE("[WINDOWS WINDOW]: Window Dimensions: [%dx%d]\n", props.Width, props.Height);
 
-		m_Context = new Engine::Platform::GraphicsContext(m_Window);
+		m_Context = new GraphicsContext(m_Window);
 		m_Context->Init();
 
 		/* -------------------------------------------------------------------------------- */

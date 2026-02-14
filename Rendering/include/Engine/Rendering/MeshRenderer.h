@@ -10,7 +10,7 @@ namespace Engine::Framework
 {
     class Transform;
     class Scene;
-    class GameObject;
+    class Entity;
 }
 
 namespace Engine::Rendering

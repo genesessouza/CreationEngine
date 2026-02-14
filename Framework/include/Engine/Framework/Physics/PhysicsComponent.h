@@ -11,13 +11,13 @@
 
 namespace Engine::Framework
 {
-	class GameObject;
+	class Entity;
 }
 namespace Engine::Framework::Physics
 {
 	class Collider;
 
-	class PhysicsComponent : public Engine::Framework::Component
+	class PhysicsComponent : public Component
 	{
 	public:
 		PhysicsComponent() = default;

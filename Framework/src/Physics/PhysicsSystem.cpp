@@ -1,6 +1,6 @@
 #include "Engine/Framework/Physics/PhysicsSystem.h"
 
-#include "Engine/Framework/GameObject.h"
+#include "Engine/Framework/Entity.h"
 
 namespace Engine::Framework::Physics
 {

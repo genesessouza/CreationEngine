@@ -8,7 +8,7 @@ namespace Engine::Framework
 {
 	class Camera;
 	class Scene;
-	class GameObject;
+	class Entity;
 }
 
 namespace Engine::Framework::Lights

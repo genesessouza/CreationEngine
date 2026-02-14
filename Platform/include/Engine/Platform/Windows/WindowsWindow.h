@@ -35,7 +35,7 @@ namespace Engine::Platform::Windows
     private:
         GLFWwindow* m_Window = nullptr;
 
-        Engine::Platform::GraphicsContext* m_Context;
+        GraphicsContext* m_Context;
 
         EventCallbackFn m_EventCallback;
     };

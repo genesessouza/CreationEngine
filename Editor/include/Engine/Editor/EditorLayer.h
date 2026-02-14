@@ -32,7 +32,7 @@ namespace Engine::Editor
 					this->m_EventCallback(e);
 				});
 
-			Engine::Editor::EditorStyle::ApplyDarkTheme();
+			EditorStyle::ApplyDarkTheme();
 		}
 
 		void OnUpdate(float deltaTime) override
